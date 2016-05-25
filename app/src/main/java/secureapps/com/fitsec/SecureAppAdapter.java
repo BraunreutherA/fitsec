@@ -42,11 +42,8 @@ public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.Secu
     }
 
     @Override
-    public void onBindViewHolder(SecureAppViewHolder holder, int position) {
+    public void onBindViewHolder(SecureAppViewHolder holder, final int position) {
         final App app = appList.get(position);
-
-        Timber.d(app.toString());
-
         Picasso.with(context)
                 .load(app.getAppImageUrl())
                 .into(holder.logo);
@@ -56,17 +53,19 @@ public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.Secu
         float percentage = (float) app.getFakeSecureCount() / (float) app.getUserCount();
         holder.secureCount.setText(Integer.toString((int) (percentage * 100)) + "%");
 
+        holder.toggle.setChecked(app.isChecked());
         holder.toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     Timber.d("increase the secure count");
                     app.incrementSecuredCount();
+                    appList.set(position, app);
                 } else {
                     Timber.d("decrease the secure count");
                     app.decrementSecureCount();
+                    appList.set(position, app);
                 }
-                app.saveInBackground();
             }
         });
     }

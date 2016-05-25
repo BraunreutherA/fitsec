@@ -4,10 +4,14 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +24,9 @@ import timber.log.Timber;
 public class MainActivity extends BaseActivity {
     @BindView(R.id.app_list)
     RecyclerView appList;
+
+    @BindView(R.id.btn_save)
+    Button saveBtn;
 
     private List<App> apps;
     private SecureAppAdapter secureAppAdapter;
@@ -35,6 +42,21 @@ public class MainActivity extends BaseActivity {
         appList.setLayoutManager(new LinearLayoutManager(this));
         appList.setItemAnimator(new DefaultItemAnimator());
         appList.setAdapter(secureAppAdapter);
+
+        saveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                App.saveAllInBackground(apps, new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e != null) {
+                            Toast toast = Toast.makeText(MainActivity.this, "saved...", Toast.LENGTH_LONG);
+                            toast.show();
+                        }
+                    }
+                });
+            }
+        });
     }
 
     @Override
