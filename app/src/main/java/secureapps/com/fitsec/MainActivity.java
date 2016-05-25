@@ -49,6 +49,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void done(List<App> apps, ParseException e) {
                 Timber.d(apps.toString());
+                MainActivity.this.apps.clear();
                 MainActivity.this.apps.addAll(apps);
                 MainActivity.this.secureAppAdapter.notifyDataSetChanged();
             }
