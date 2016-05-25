@@ -52,7 +52,9 @@ public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.Secu
                 .into(holder.logo);
 
         holder.name.setText(app.getAppName());
-        holder.secureCount.setText(Integer.toString(app.getFakeSecureCount()));
+
+        float percentage = (float) app.getFakeSecureCount() / (float) app.getUserCount();
+        holder.secureCount.setText(Integer.toString((int) (percentage * 100)) + "%");
 
         holder.toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

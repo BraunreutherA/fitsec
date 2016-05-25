@@ -33,4 +33,8 @@ public class App extends ParseObject {
     public int getFakeSecureCount() {
         return getInt("fakeSecureCount");
     }
+
+    public int getUserCount() {
+        return getInt("userCount");
+    }
 }
