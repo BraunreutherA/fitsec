@@ -29,4 +29,8 @@ public class App extends ParseObject {
     public void decrementSecureCount() {
         increment("secureCount", -1);
     }
+
+    public int getFakeSecureCount() {
+        return getInt("fakeSecureCount");
+    }
 }

@@ -52,7 +52,7 @@ public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.Secu
                 .into(holder.logo);
 
         holder.name.setText(app.getAppName());
-        holder.secureCount.setText(Integer.toString(app.getSecuredCount()));
+        holder.secureCount.setText(Integer.toString(app.getFakeSecureCount()));
 
         holder.toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
