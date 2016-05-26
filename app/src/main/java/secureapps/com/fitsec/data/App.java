@@ -8,7 +8,11 @@ import com.parse.ParseObject;
  */
 @ParseClassName("App")
 public class App extends ParseObject {
-    public App() {}
+    private boolean isChecked;
+
+    public App() {
+        isChecked = false;
+    }
 
     public String getAppImageUrl() {
         return getString("imageUrl");
@@ -24,10 +28,12 @@ public class App extends ParseObject {
 
     public void incrementSecuredCount() {
         increment("secureCount");
+        isChecked = true;
     }
 
     public void decrementSecureCount() {
         increment("secureCount", -1);
+        isChecked = false;
     }
 
     public int getFakeSecureCount() {
@@ -36,5 +42,9 @@ public class App extends ParseObject {
 
     public int getUserCount() {
         return getInt("userCount");
+    }
+
+    public boolean isChecked() {
+        return isChecked;
     }
 }
