@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -87,7 +88,7 @@ public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.Secu
         TextView secureCount;
 
         @BindView(R.id.app_secure_toggle)
-        ToggleButton toggle;
+        Switch toggle;
 
         public SecureAppViewHolder(View itemView) {
             super(itemView);
