@@ -2,38 +2,46 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/app_logo"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:layout_gravity="left" />
-
-    <TextView
-        android:id="@+id/app_name"
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"/>
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/app_secure_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"/>
+        <ImageView
+            android:id="@+id/app_logo"
+            android:layout_width="71dp"
+            android:layout_height="71dp"
+            android:layout_marginRight="35dp" />
 
-    <Switch
-        android:id="@+id/app_secure_toggle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textOn="secure"
-        android:textOff="unsecure"
-        android:layout_gravity="right"
-        android:gravity="right" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_toRightOf="@+id/app_logo">
+            <TextView
+                android:id="@+id/app_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/app_secure_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <Switch
+            android:id="@+id/app_secure_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOn="secure"
+            android:textOff="unsecure"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/colorPrimaryLight" />
+        android:background="@color/colorPrimaryLight"
+        android:layout_alignParentRight="true" />
 </LinearLayout>
