@@ -9,7 +9,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import com.squareup.picasso.Picasso;
 
@@ -26,12 +25,10 @@ import timber.log.Timber;
 public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.SecureAppViewHolder> {
     private final List<App> appList;
     private final Context context;
-    private final ToggleListener toggleListener;
 
     public SecureAppAdapter(List<App> appList, Context context) {
         this.appList = appList;
         this.context = context;
-        toggleListener = null;
     }
 
     @Override
@@ -45,7 +42,7 @@ public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.Secu
     }
 
     @Override
-    public void onBindViewHolder(SecureAppViewHolder holder, int position) {
+    public void onBindViewHolder(SecureAppViewHolder holder, final int position) {
         final App app = appList.get(position);
         Picasso.with(context)
                 .load(app.getAppImageUrl())
@@ -54,11 +51,22 @@ public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.Secu
         holder.name.setText(app.getAppName());
 
         float percentage = (float) app.getFakeSecureCount() / (float) app.getUserCount();
-        holder.secureCount.setText(Integer.toString((int) (percentage * 100)) + "%");
 
+        holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.white));
+
+        if (percentage < 0.2f) {
+            holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.veryLightColorPrimary));
+        }
+        if (percentage > 0.6f) {
+            holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.veryLightColorAccent));
+        }
+
+        holder.secureCount.setText(Integer.toString((int) (percentage * 100)) + "% der Nutzer sichern diese App.");
+
+        holder.toggle.setOnCheckedChangeListener(null);
         holder.toggle.setChecked(app.isChecked());
         holder.toggle.setTag(app);
-        holder.toggle.setOnCheckedChangeListener(new OnCheckedChangeListener(toggleListener) {
+        holder.toggle.setOnCheckedChangeListener(new OnCheckedChangeListener(position) {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 App app = (App) buttonView.getTag();
@@ -69,21 +77,18 @@ public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.Secu
                     Timber.d("decrease the secure count");
                     app.decrementSecureCount();
                 }
-                toggleListener.toggled(app);
+                appList.set(this.position, app);
+                notifyDataSetChanged();
             }
         });
     }
 
     private abstract class OnCheckedChangeListener implements CompoundButton.OnCheckedChangeListener {
-        private final ToggleListener toggleListener;
+        protected int position;
 
-        public OnCheckedChangeListener(ToggleListener toggleListener) {
-            this.toggleListener = toggleListener;
+        public OnCheckedChangeListener(int position) {
+            this.position = position;
         }
-    }
-
-    public interface ToggleListener {
-        void toggled(App app);
     }
 
     @Override

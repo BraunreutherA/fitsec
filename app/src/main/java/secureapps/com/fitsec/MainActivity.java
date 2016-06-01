@@ -50,8 +50,12 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void done(ParseException e) {
                         if (e != null) {
+                            Toast toast = Toast.makeText(MainActivity.this, "error on save... " + e.getMessage(), Toast.LENGTH_LONG);
+                            toast.show();
+                        } else {
                             Toast toast = Toast.makeText(MainActivity.this, "saved...", Toast.LENGTH_LONG);
                             toast.show();
+                            fetchSecureAppdata();
                         }
                     }
                 });
