@@ -24,12 +24,14 @@ import timber.log.Timber;
  * @author Alexander Braunreuther
  */
 public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.SecureAppViewHolder> {
-    private List<App> appList;
+    private final List<App> appList;
     private final Context context;
+    private final ToggleListener toggleListener;
 
     public SecureAppAdapter(List<App> appList, Context context) {
         this.appList = appList;
         this.context = context;
+        toggleListener = null;
     }
 
     @Override
@@ -43,7 +45,7 @@ public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.Secu
     }
 
     @Override
-    public void onBindViewHolder(SecureAppViewHolder holder, final int position) {
+    public void onBindViewHolder(SecureAppViewHolder holder, int position) {
         final App app = appList.get(position);
         Picasso.with(context)
                 .load(app.getAppImageUrl())
@@ -55,20 +57,33 @@ public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.Secu
         holder.secureCount.setText(Integer.toString((int) (percentage * 100)) + "%");
 
         holder.toggle.setChecked(app.isChecked());
-        holder.toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        holder.toggle.setTag(app);
+        holder.toggle.setOnCheckedChangeListener(new OnCheckedChangeListener(toggleListener) {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                App app = (App) buttonView.getTag();
                 if (isChecked) {
                     Timber.d("increase the secure count");
                     app.incrementSecuredCount();
-                    appList.set(position, app);
                 } else {
                     Timber.d("decrease the secure count");
                     app.decrementSecureCount();
-                    appList.set(position, app);
                 }
+                toggleListener.toggled(app);
             }
         });
+    }
+
+    private abstract class OnCheckedChangeListener implements CompoundButton.OnCheckedChangeListener {
+        private final ToggleListener toggleListener;
+
+        public OnCheckedChangeListener(ToggleListener toggleListener) {
+            this.toggleListener = toggleListener;
+        }
+    }
+
+    public interface ToggleListener {
+        void toggled(App app);
     }
 
     @Override
