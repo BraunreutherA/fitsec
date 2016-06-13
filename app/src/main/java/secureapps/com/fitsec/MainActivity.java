@@ -21,6 +21,9 @@ import secureapps.com.fitsec.base.BaseActivity;
 import secureapps.com.fitsec.data.App;
 import timber.log.Timber;
 
+
+//Test
+
 public class MainActivity extends BaseActivity {
     @BindView(R.id.app_list)
     RecyclerView appList;
