@@ -1,6 +1,7 @@
 package secureapps.com.fitsec;
 
 import android.app.Activity;
+import android.app.KeyguardManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,6 +20,7 @@ public class LockScreenActivity extends Activity implements OnClickListener {
     private static final int ADMIN_INTENT = 15;
     private static final String description = "Sample Description";
     private DevicePolicyManager devicePolicyManager;
+    private KeyguardManager keyguardManager;
     private ComponentName componentName;
 
     @Override
@@ -26,7 +28,10 @@ public class LockScreenActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_lock);
+
         devicePolicyManager = (DevicePolicyManager)getSystemService(Context.DEVICE_POLICY_SERVICE);
+        keyguardManager = (KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE);
+
         componentName = new ComponentName(this, MyAdminReceiver.class);
 
         Button btnEnableAdmin = (Button) findViewById(R.id.btnEnable);
@@ -56,7 +61,9 @@ public class LockScreenActivity extends Activity implements OnClickListener {
             case R.id.btnLock:
                 boolean isAdmin = devicePolicyManager.isAdminActive(componentName);
                 if (isAdmin) {
-                    devicePolicyManager.lockNow();
+                    //devicePolicyManager.lockNow();
+                    Intent lockIntent = keyguardManager.createConfirmDeviceCredentialIntent("test", "Teeeeeeeeeeeeest");
+                    startActivityForResult(lockIntent, ADMIN_INTENT);
                 }else{
                     Toast.makeText(getApplicationContext(), "Not Registered as admin", Toast.LENGTH_SHORT).show();
                 }

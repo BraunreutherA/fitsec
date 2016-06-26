@@ -1,5 +1,7 @@
 package secureapps.com.fitsec;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -46,10 +48,15 @@ public class MainActivity extends BaseActivity {
         appList.setItemAnimator(new DefaultItemAnimator());
         appList.setAdapter(secureAppAdapter);
 
+        final Activity thisActivity = this;
+
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                App.saveAllInBackground(apps, new SaveCallback() {
+                Intent intent = new Intent(thisActivity, LockScreenActivity.class);
+                startActivity(intent);
+
+                /*App.saveAllInBackground(apps, new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
                         if (e != null) {
@@ -61,9 +68,10 @@ public class MainActivity extends BaseActivity {
                             fetchSecureAppdata();
                         }
                     }
-                });
+                });*/
             }
         });
+
     }
 
     @Override
