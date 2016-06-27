@@ -1,6 +1,10 @@
 package secureapps.com.fitsec;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,25 +14,20 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import secureapps.com.fitsec.data.App;
+import io.realm.OrderedRealmCollection;
+import io.realm.Realm;
+import io.realm.RealmRecyclerViewAdapter;
+import secureapps.com.fitsec.data.RealmApp;
 import timber.log.Timber;
 
 /**
- * @author Alexander Braunreuther
+ * Created by Alex on 27.06.16.
  */
-public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.SecureAppViewHolder> {
-    private final List<App> appList;
-    private final Context context;
-
-    public SecureAppAdapter(List<App> appList, Context context) {
-        this.appList = appList;
-        this.context = context;
+public class RealmAppAdapter extends RealmRecyclerViewAdapter<RealmApp, RealmAppAdapter.SecureAppViewHolder> {
+    public RealmAppAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<RealmApp> data) {
+        super(context, data, true);
     }
 
     @Override
@@ -42,15 +41,14 @@ public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.Secu
     }
 
     @Override
-    public void onBindViewHolder(SecureAppViewHolder holder, final int position) {
-        final App app = appList.get(position);
-        Picasso.with(context)
-                .load(app.getAppImageUrl())
-                .into(holder.logo);
+    public void onBindViewHolder(SecureAppViewHolder holder, int position) {
+        final RealmApp app = getData().get(position);
 
-        holder.name.setText(app.getAppName());
+        Bitmap appIcon = BitmapFactory.decodeByteArray(app.getAppIcon(), 0, app.getAppIcon().length);
+        holder.logo.setImageBitmap(appIcon);
+        holder.name.setText(app.getName());
 
-        float percentage = (float) app.getFakeSecureCount() / (float) app.getUserCount();
+        float percentage = (float) app.getInstallations() / (float) app.getSecureCount();
 
         holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.white));
 
@@ -64,21 +62,16 @@ public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.Secu
         holder.secureCount.setText(Integer.toString((int) (percentage * 100)) + "% der Nutzer sichern diese App.");
 
         holder.toggle.setOnCheckedChangeListener(null);
-        holder.toggle.setChecked(app.isChecked());
+        holder.toggle.setChecked(app.isSecured());
         holder.toggle.setTag(app);
         holder.toggle.setOnCheckedChangeListener(new OnCheckedChangeListener(position) {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                App app = (App) buttonView.getTag();
-                if (isChecked) {
-                    Timber.d("increase the secure count");
-                    app.incrementSecuredCount();
-                } else {
-                    Timber.d("decrease the secure count");
-                    app.decrementSecureCount();
-                }
-                appList.set(this.position, app);
-                notifyDataSetChanged();
+                RealmApp app = (RealmApp) buttonView.getTag();
+                Realm realm = Realm.getDefaultInstance();
+                realm.beginTransaction();
+                app.setSecured(isChecked);
+                realm.commitTransaction();
             }
         });
     }
@@ -91,12 +84,7 @@ public class SecureAppAdapter extends RecyclerView.Adapter<SecureAppAdapter.Secu
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return appList.size();
-    }
-
-    public static final class SecureAppViewHolder extends RecyclerView.ViewHolder {
+    public final class SecureAppViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.app_logo)
         ImageView logo;
 
