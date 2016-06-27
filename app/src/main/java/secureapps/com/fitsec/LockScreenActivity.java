@@ -82,4 +82,21 @@ public class LockScreenActivity extends Activity implements OnClickListener {
             }
         }
     }
+
+    public void openLockScreen(){
+
+        boolean isAdmin = devicePolicyManager.isAdminActive(componentName);
+        if(!isAdmin){
+            //enable admin device rights
+            Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+            intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
+            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,"Please enable admin rights");
+            startActivityForResult(intent, ADMIN_INTENT);
+        }
+
+        Intent lockIntent = keyguardManager.createConfirmDeviceCredentialIntent("test", "Teeeeeeeeeeeeest");
+        startActivityForResult(lockIntent, ADMIN_INTENT);
+
+
+    }
 }

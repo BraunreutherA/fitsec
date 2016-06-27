@@ -50,13 +50,13 @@ public class MainActivity extends BaseActivity {
         }
 
 
-            Timer timer = new Timer();
-            TimerTask refresher = new TimerTask() {
-                public void run() {
-                    ControlOpenApp.printCurrentUsageStatus(MainActivity.this);
-                };
+        Timer timer = new Timer();
+        TimerTask refresher = new TimerTask() {
+            public void run() {
+                ControlOpenApp.printCurrentUsageStatus(MainActivity.this);
             };
-            timer.scheduleAtFixedRate(refresher, 100,100);
+        };
+        timer.scheduleAtFixedRate(refresher, 100,100);
         
 
 

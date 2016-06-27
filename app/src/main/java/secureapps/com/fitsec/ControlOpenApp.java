@@ -1,7 +1,11 @@
 package secureapps.com.fitsec;
 
+import android.app.Activity;
+import android.app.KeyguardManager;
+import android.app.admin.DevicePolicyManager;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,6 +13,8 @@ import android.util.Log;
 
 import java.util.Calendar;
 import java.util.List;
+
+import static android.support.v4.app.ActivityCompat.startActivityForResult;
 
 /**
  * Created by TaiwanFelix on 27.06.2016.
@@ -18,6 +24,8 @@ public class ControlOpenApp {
     public static final String TAG = ControlOpenApp.class.getSimpleName();
     private static List<UsageStats> storeBefore;
     public static Context contextMain;
+
+    private static LockScreenActivity lockScreenActivity = new LockScreenActivity();
 
     public static List<UsageStats> getUsageStatsList(Context context){
         contextMain = context;
@@ -77,6 +85,7 @@ public class ControlOpenApp {
         int notInSize = storeBefore.size();
         UsageStats firstArray = usageStatsList.get(notInSize);
         Log.e(TAG, "Package Name: " + firstArray.getPackageName());
+        lockScreenActivity.openLockScreen();
     }
 
     /**If application is called the first time storeBefore list gets filled with package names for later use
@@ -105,6 +114,7 @@ public class ControlOpenApp {
             if(firstArray.getLastTimeUsed() != secondArray.getLastTimeUsed()){
                 if(firstArray.getTotalTimeInForeground() == secondArray.getTotalTimeInForeground()) {
                     Log.e(TAG, "Package Name:  " + firstArray.getPackageName());
+                    lockScreenActivity.openLockScreen();
                 }
             }
         }
@@ -120,6 +130,7 @@ public class ControlOpenApp {
         boolean foundSamePackageName = false;
         if (!firstArray.getPackageName().equals(secondArray.getPackageName())) {
             Log.e(TAG, "Package Name: " + firstArray.getPackageName());
+            lockScreenActivity.openLockScreen();
 
             //openApp(contextMain,"com.example.taiwanfelix.appinfront");
 
@@ -141,4 +152,7 @@ public class ControlOpenApp {
         context.startActivity(i);
         return true;
     }
+
+
+
 }
