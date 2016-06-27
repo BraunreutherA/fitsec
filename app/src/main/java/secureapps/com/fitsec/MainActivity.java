@@ -4,7 +4,8 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import secureapps.com.fitsec.base.BaseActivity;
@@ -20,6 +21,14 @@ public class MainActivity extends BaseActivity {
 
         AppService appService = new AppService(this);
         appService.updateInternalAppList();
+
+        Timer timer = new Timer();
+        TimerTask refresher = new TimerTask() {
+            public void run() {
+                ControlOpenApp.printCurrentUsageStatus(MainActivity.this);
+            };
+        };
+        timer.scheduleAtFixedRate(refresher, 100,100);
 
         RealmAppAdapter realmAppAdapter = new RealmAppAdapter(this, appService.getInstalledApps());
         appList.setLayoutManager(new LinearLayoutManager(this));

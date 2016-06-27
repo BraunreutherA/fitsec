@@ -76,7 +76,7 @@ public class AppService {
         return packages;
     }
 
-    public boolean isSystemApp(String packageName) {
+    private boolean isSystemApp(String packageName) {
         // TODO doesn't work
 
         try {
