@@ -1,6 +1,8 @@
 package secureapps.com.fitsec;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,6 +17,8 @@ import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import secureapps.com.fitsec.base.BaseActivity;
@@ -38,6 +42,22 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (ControlOpenApp.getUsageStatsList(this).isEmpty()){
+            Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+            startActivity(intent);
+        }
+
+
+            Timer timer = new Timer();
+            TimerTask refresher = new TimerTask() {
+                public void run() {
+                    ControlOpenApp.printCurrentUsageStatus(MainActivity.this);
+                };
+            };
+            timer.scheduleAtFixedRate(refresher, 100,100);
+        
+
 
         apps = new ArrayList<>();
 
