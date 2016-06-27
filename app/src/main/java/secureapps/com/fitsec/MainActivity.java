@@ -53,10 +53,7 @@ public class MainActivity extends BaseActivity {
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(thisActivity, LockScreenActivity.class);
-                startActivity(intent);
-
-                /*App.saveAllInBackground(apps, new SaveCallback() {
+                    App.saveAllInBackground(apps, new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
                         if (e != null) {
@@ -68,7 +65,7 @@ public class MainActivity extends BaseActivity {
                             fetchSecureAppdata();
                         }
                     }
-                });*/
+                });
             }
         });
 
