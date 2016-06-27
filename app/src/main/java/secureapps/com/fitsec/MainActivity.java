@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Button;
+import android.util.Log;
 
 import butterknife.BindView;
 import secureapps.com.fitsec.base.BaseActivity;
@@ -12,9 +12,6 @@ import secureapps.com.fitsec.base.BaseActivity;
 public class MainActivity extends BaseActivity {
     @BindView(R.id.app_list)
     RecyclerView appList;
-
-    @BindView(R.id.btn_save)
-    Button saveBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

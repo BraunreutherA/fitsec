@@ -2,6 +2,7 @@ package secureapps.com.fitsec;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import java.util.ArrayList;
@@ -10,13 +11,14 @@ import java.util.List;
 import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
 import io.realm.RealmQuery;
-import io.realm.RealmResults;
 import secureapps.com.fitsec.data.RealmApp;
 
 /**
  * Created by Alex on 27.06.16.
  */
 public class AppService {
+    private static final String SYSTEM_PACKAGE_NAME = "android";
+
     private final PackageManager packageManager;
 
     public AppService(Context context) {
@@ -28,6 +30,15 @@ public class AppService {
         RealmQuery<RealmApp> query = realm.where(RealmApp.class);
 
         return query.findAllAsync();
+    }
+
+    public boolean isAppSecured(String packageName) {
+        Realm realm = Realm.getDefaultInstance();
+        RealmQuery<RealmApp> query = realm.where(RealmApp.class).equalTo("packageName", packageName);
+
+        RealmApp realmApp = query.findFirst();
+
+        return realmApp != null && realmApp.isSecured();
     }
 
     public void updateInternalAppList() {
@@ -54,21 +65,29 @@ public class AppService {
     }
 
     private List<ApplicationInfo> getPackageInformation() {
-        List<ApplicationInfo> packages = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+        List<ApplicationInfo> packages = new ArrayList<>();
 
-//        for(ApplicationInfo app : packages) {
-//            //checks for flags; if flagged, check if updated system app
-//            if((app.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 1) {
-//                installedApps.add(app);
-//                //it's a system app, not interested
-//            } else if ((app.flags & ApplicationInfo.FLAG_SYSTEM) == 1) {
-//                //Discard this one
-//                //in this case, it should be a user-installed app
-//            } else {
-//                installedApps.add(app);
-//            }
-//        }
+        for (ApplicationInfo app: packageManager.getInstalledApplications(PackageManager.GET_META_DATA)) {
+            if (!isSystemApp(app.packageName)) {
+                packages.add(app);
+            }
+        }
 
         return packages;
+    }
+
+    public boolean isSystemApp(String packageName) {
+        // TODO doesn't work
+
+        try {
+            PackageInfo targetPkgInfo = packageManager.getPackageInfo(
+                    packageName, PackageManager.GET_SIGNATURES);
+            PackageInfo sys = packageManager.getPackageInfo(
+                    SYSTEM_PACKAGE_NAME, PackageManager.GET_SIGNATURES);
+            return (targetPkgInfo != null && targetPkgInfo.signatures != null && sys.signatures[0]
+                    .equals(targetPkgInfo.signatures[0]));
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 }
