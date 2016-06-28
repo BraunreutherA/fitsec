@@ -4,6 +4,10 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +20,14 @@ import secureapps.com.fitsec.data.RealmApp;
 /**
  * Created by Alex on 27.06.16.
  */
-public class AppService {
+public class AppService implements LoaderManager.LoaderCallbacks<List<ApplicationInfo>> {
     private static final String SYSTEM_PACKAGE_NAME = "android";
 
     private final PackageManager packageManager;
+    private final Context context;
 
     public AppService(Context context) {
+        this.context = context;
         packageManager = context.getPackageManager();
     }
 
@@ -41,10 +47,7 @@ public class AppService {
         return realmApp != null && realmApp.isSecured();
     }
 
-    public void updateInternalAppList() {
-        List<ApplicationInfo> packages = getPackageInformation();
-        Realm realm = Realm.getDefaultInstance();
-
+    public void updateInternalAppList(List<ApplicationInfo> packages) {
         final List<RealmApp> apps = new ArrayList<>();
         for (ApplicationInfo applicationInfo: packages) {
             RealmApp realmApp = new RealmApp();
@@ -56,6 +59,7 @@ public class AppService {
             apps.add(realmApp);
         }
 
+        Realm realm = Realm.getDefaultInstance();
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
@@ -64,17 +68,17 @@ public class AppService {
         });
     }
 
-    private List<ApplicationInfo> getPackageInformation() {
-        List<ApplicationInfo> packages = new ArrayList<>();
-
-        for (ApplicationInfo app: packageManager.getInstalledApplications(PackageManager.GET_META_DATA)) {
-            if (!isSystemApp(app.packageName)) {
-                packages.add(app);
-            }
-        }
-
-        return packages;
-    }
+//    private List<ApplicationInfo> getPackageInformation() {
+//        List<ApplicationInfo> packages = new ArrayList<>();
+//
+////        for (ApplicationInfo app: packageManager.getInstalledApplications(PackageManager.GET_META_DATA)) {
+////            if (!isSystemApp(app.packageName)) {
+////                packages.add(app);
+////            }
+////        }
+//
+//        return packages;
+//    }
 
     private boolean isSystemApp(String packageName) {
         // TODO doesn't work
@@ -89,5 +93,34 @@ public class AppService {
         } catch (PackageManager.NameNotFoundException e) {
             return false;
         }
+    }
+
+    @Override
+    public Loader<List<ApplicationInfo>> onCreateLoader(int id, Bundle args) {
+        return new AppListLoader(context);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<ApplicationInfo>> loader, List<ApplicationInfo> data) {
+        updateInternalAppList(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<ApplicationInfo>> loader) {}
+}
+
+/**
+ * A custom Loader that loads all of the installed applications.
+ */
+class AppListLoader extends AsyncTaskLoader<List<ApplicationInfo>> {
+    private final PackageManager packageManager;
+
+    public AppListLoader(Context context) {
+        super(context);
+        packageManager = getContext().getPackageManager();
+    }
+
+    @Override public List<ApplicationInfo> loadInBackground() {
+        return packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
     }
 }
