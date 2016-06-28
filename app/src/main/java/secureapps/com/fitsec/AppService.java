@@ -32,7 +32,7 @@ public class AppService {
         return query.findAllAsync();
     }
 
-    public boolean isAppSecured(String packageName) {
+    public static boolean isAppSecured(String packageName) {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<RealmApp> query = realm.where(RealmApp.class).equalTo("packageName", packageName);
 

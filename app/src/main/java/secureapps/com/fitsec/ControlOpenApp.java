@@ -78,8 +78,12 @@ public class ControlOpenApp {
     private static void appNeverOpendBeforeInList(List<UsageStats> storeBefore, List<UsageStats> usageStatsList){
         int notInSize = storeBefore.size();
         UsageStats firstArray = usageStatsList.get(notInSize);
+        String appPackageName = firstArray.getPackageName();
         Log.e(TAG, "Package Name: " + firstArray.getPackageName());
-        lockScreenActivity.openLockScreen();
+        if(AppService.isAppSecured(appPackageName) == true){
+            Log.e(TAG, "App is in the secured list ");
+            //TODO lockScreenActivity.openLockScreen();
+        }
     }
 
     /**If application is called the first time storeBefore list gets filled with package names for later use
@@ -108,7 +112,11 @@ public class ControlOpenApp {
             if(firstArray.getLastTimeUsed() != secondArray.getLastTimeUsed()){
                 if(firstArray.getTotalTimeInForeground() == secondArray.getTotalTimeInForeground()) {
                     Log.e(TAG, "Package Name:  " + firstArray.getPackageName());
-                    lockScreenActivity.openLockScreen();
+                    String appPackageName = firstArray.getPackageName();
+                    if(AppService.isAppSecured(appPackageName) == true){
+                        Log.e(TAG, "App is in the secured list ");
+                        //TODO lockScreenActivity.openLockScreen();
+                    }
                 }
             }
         }
@@ -124,26 +132,13 @@ public class ControlOpenApp {
         boolean foundSamePackageName = false;
         if (!firstArray.getPackageName().equals(secondArray.getPackageName())) {
             Log.e(TAG, "Package Name: " + firstArray.getPackageName());
-            lockScreenActivity.openLockScreen();
-
-            //openApp(contextMain,"com.example.taiwanfelix.appinfront");
-
+            String appPackageName = firstArray.getPackageName();
+            if(AppService.isAppSecured(appPackageName) == true){
+                Log.e(TAG, "App is in the secured list ");
+                //TODO lockScreenActivity.openLockScreen();
+            }
             foundSamePackageName = true;
         }
         return foundSamePackageName;
-    }
-
-    /**
-     * This methode gets called when on specific application clicked
-     * @param context current context of MainActvity
-     * @param packageName Names of the package which will be created
-     * @return boolean value if creation of application succeeded
-     */
-    public static boolean openApp(Context context, String packageName) {
-        PackageManager manager = context.getPackageManager();
-        Intent i = manager.getLaunchIntentForPackage(packageName);
-        i.addCategory(Intent.CATEGORY_LAUNCHER);
-        context.startActivity(i);
-        return true;
     }
 }
