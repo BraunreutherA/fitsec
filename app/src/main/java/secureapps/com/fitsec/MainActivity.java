@@ -20,7 +20,6 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         AppService appService = new AppService(this);
-        appService.updateInternalAppList();
 
         Timer timer = new Timer();
         TimerTask refresher = new TimerTask() {
