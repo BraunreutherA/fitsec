@@ -19,8 +19,6 @@ public class ControlOpenApp {
     private static List<UsageStats> storeBefore;
     public static Context contextMain;
 
-    private static LockScreenActivity lockScreenActivity = new LockScreenActivity();
-
     public static List<UsageStats> getUsageStatsList(Context context){
         contextMain = context;
         UsageStatsManager usm = getUsageStatsManager(context);
@@ -82,7 +80,7 @@ public class ControlOpenApp {
         Log.e(TAG, "Package Name: " + firstArray.getPackageName());
         if(AppService.isAppSecured(appPackageName) == true){
             Log.e(TAG, "App is in the secured list ");
-            //TODO lockScreenActivity.openLockScreen();
+            openLockScreen();
         }
     }
 
@@ -115,7 +113,7 @@ public class ControlOpenApp {
                     String appPackageName = firstArray.getPackageName();
                     if(AppService.isAppSecured(appPackageName) == true){
                         Log.e(TAG, "App is in the secured list ");
-                        //TODO lockScreenActivity.openLockScreen();
+                        openLockScreen();
                     }
                 }
             }
@@ -135,10 +133,15 @@ public class ControlOpenApp {
             String appPackageName = firstArray.getPackageName();
             if(AppService.isAppSecured(appPackageName) == true){
                 Log.e(TAG, "App is in the secured list ");
-                //TODO lockScreenActivity.openLockScreen();
+                openLockScreen();
             }
             foundSamePackageName = true;
         }
         return foundSamePackageName;
+    }
+
+    private static void openLockScreen() {
+        LockScreenActivity lockScreen = new LockScreenActivity();
+        lockScreen.openLockScreen();
     }
 }
