@@ -77,12 +77,20 @@ public class SettingsActivity extends FragmentActivity {
                             })
                             .show();
                     if (controlOpenApp.getUsageStatsList().isEmpty()){
-                        startCatchOpenAppData();
+                        //startCatchOpenAppData();
                     }
                 }
                 else{
-                    startCatchOpenAppData();
+                    //startCatchOpenAppData();
                 }
+            }
+        });
+
+        Button activateSecurity = (Button)findViewById(R.id.activate_security);
+        activateSecurity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startCatchOpenAppData();
             }
         });
 
