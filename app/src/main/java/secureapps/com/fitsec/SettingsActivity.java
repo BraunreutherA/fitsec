@@ -24,10 +24,14 @@ import android.widget.Button;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import timber.log.Timber;
+
 public class SettingsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     private DevicePolicyManager devicePolicyManager;
     private KeyguardManager keyguardManager;
+
+    private ControlOpenApp controlOpenApp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,41 +53,49 @@ public class SettingsActivity extends AppCompatActivity implements NavigationVie
         devicePolicyManager = (DevicePolicyManager)getSystemService(Context.DEVICE_POLICY_SERVICE);
         keyguardManager = (KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE);
 
-        final Activity thisActivity = this;
-
         Button enableUserStats = (Button)findViewById(R.id.enableUserStats);
+
+        controlOpenApp = new ControlOpenApp(this);
+        controlOpenApp.setOnAppOpenListener(new ControlOpenApp.OnAppOpenListener() {
+            @Override
+            public void openedApp(String packageName) {
+                Timber.e("opened secured app..." + packageName);
+                // TODO secured app was opened -> open lock screen or something else.
+            }
+        });
+
         enableUserStats.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if(ControlOpenApp.getUsageStatsList(thisActivity).isEmpty()){
-                    new AlertDialog.Builder(SettingsActivity.this)
-                            .setTitle("Nutzungsdatenzugriff")
-                            .setMessage("fITsec benötigt eine weitere Berechtigung. Bitte aktivieren Sie diese in der folgenden Anwendung.")
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-                                    startActivity(intent);
-                                }
-                            })
-                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    //Nothing happens
-                                }
-                            })
-                            .show();
-                    if (ControlOpenApp.getUsageStatsList(thisActivity).isEmpty()){
-                        startCatchOpenAppData();
-                    }
-                }
-                else{
-                    startCatchOpenAppData();
-                }
+                startCatchOpenAppData();
+//                if(controlOpenApp.getUsageStatsList().isEmpty()){
+//                    new AlertDialog.Builder(SettingsActivity.this)
+//                            .setTitle("Nutzungsdatenzugriff")
+//                            .setMessage("fITsec benötigt eine weitere Berechtigung. Bitte aktivieren Sie diese in der folgenden Anwendung.")
+//                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+//                                    startActivity(intent);
+//                                }
+//                            })
+//                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int which) {
+//                                    //Nothing happens
+//                                }
+//                            })
+//                            .show();
+//                    if (controlOpenApp.getUsageStatsList().isEmpty()){
+//                        startCatchOpenAppData();
+//                    }
+//                }
+//                else{
+//                    startCatchOpenAppData();
+//                }
             }
         });
 
         Button setDeviceAdmin = (Button)findViewById(R.id.setDeviceAdmin);
-        final ComponentName componentName = new ComponentName(thisActivity, MyAdminReceiver.class);
+        final ComponentName componentName = new ComponentName(this, MyAdminReceiver.class);
 
         setDeviceAdmin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +121,7 @@ public class SettingsActivity extends AppCompatActivity implements NavigationVie
         Timer timer = new Timer();
         TimerTask refresher = new TimerTask() {
             public void run() {
-                ControlOpenApp.printCurrentUsageStatus(SettingsActivity.this);
+                controlOpenApp.printCurrentUsageStatus();
             };
         };
         timer.scheduleAtFixedRate(refresher, 100,100);
