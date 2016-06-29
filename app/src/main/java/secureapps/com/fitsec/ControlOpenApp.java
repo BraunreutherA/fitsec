@@ -3,8 +3,6 @@ package secureapps.com.fitsec;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.util.Log;
 
 import java.util.Calendar;
@@ -18,6 +16,7 @@ public class ControlOpenApp {
     public static final String TAG = ControlOpenApp.class.getSimpleName();
     private static List<UsageStats> storeBefore;
     public static Context contextMain;
+
 
     public static List<UsageStats> getUsageStatsList(Context context){
         contextMain = context;
@@ -78,9 +77,9 @@ public class ControlOpenApp {
         UsageStats firstArray = usageStatsList.get(notInSize);
         String appPackageName = firstArray.getPackageName();
         Log.e(TAG, "Package Name: " + firstArray.getPackageName());
-        if(AppService.isAppSecured(appPackageName) == true){
+
+        if(AppService.isAppSecured(appPackageName)){
             Log.e(TAG, "App is in the secured list ");
-            openLockScreen();
         }
     }
 
@@ -110,10 +109,11 @@ public class ControlOpenApp {
             if(firstArray.getLastTimeUsed() != secondArray.getLastTimeUsed()){
                 if(firstArray.getTotalTimeInForeground() == secondArray.getTotalTimeInForeground()) {
                     Log.e(TAG, "Package Name:  " + firstArray.getPackageName());
+
                     String appPackageName = firstArray.getPackageName();
-                    if(AppService.isAppSecured(appPackageName) == true){
+                    if(AppService.isAppSecured(appPackageName)){
                         Log.e(TAG, "App is in the secured list ");
-                        openLockScreen();
+
                     }
                 }
             }
@@ -130,18 +130,13 @@ public class ControlOpenApp {
         boolean foundSamePackageName = false;
         if (!firstArray.getPackageName().equals(secondArray.getPackageName())) {
             Log.e(TAG, "Package Name: " + firstArray.getPackageName());
+
             String appPackageName = firstArray.getPackageName();
-            if(AppService.isAppSecured(appPackageName) == true){
+            if(AppService.isAppSecured(appPackageName)){
                 Log.e(TAG, "App is in the secured list ");
-                openLockScreen();
             }
             foundSamePackageName = true;
         }
         return foundSamePackageName;
-    }
-
-    private static void openLockScreen() {
-        LockScreenActivity lockScreen = new LockScreenActivity();
-        lockScreen.openLockScreen();
     }
 }

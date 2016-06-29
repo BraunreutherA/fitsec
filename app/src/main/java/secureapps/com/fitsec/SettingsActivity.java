@@ -2,6 +2,7 @@ package secureapps.com.fitsec;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.KeyguardManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -23,6 +25,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class SettingsActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+
+    private DevicePolicyManager devicePolicyManager;
+    private KeyguardManager keyguardManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +46,8 @@ public class SettingsActivity extends AppCompatActivity implements NavigationVie
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(SettingsActivity.this);
 
-        final DevicePolicyManager devicePolicyManager = (DevicePolicyManager)getSystemService(Context.DEVICE_POLICY_SERVICE);
+        devicePolicyManager = (DevicePolicyManager)getSystemService(Context.DEVICE_POLICY_SERVICE);
+        keyguardManager = (KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE);
 
         final Activity thisActivity = this;
 
@@ -82,16 +88,21 @@ public class SettingsActivity extends AppCompatActivity implements NavigationVie
         setDeviceAdmin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.e("ADMIN", "admin is " + devicePolicyManager.isAdminActive(componentName));
                 if(!devicePolicyManager.isAdminActive(componentName)){
                     //enable admin device rights
                     Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
                     intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
                     intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,"Please enable admin rights");
                     startActivityForResult(intent, 15);
+                } else {
+                    Intent lockIntent = keyguardManager.createConfirmDeviceCredentialIntent("test", "Teeeeeeeeeeeeest");
+                    startActivityForResult(lockIntent, 15);
                 }
 
             }
         });
+
     }
 
     private void startCatchOpenAppData(){
