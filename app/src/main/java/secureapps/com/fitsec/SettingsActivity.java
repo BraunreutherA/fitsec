@@ -31,6 +31,7 @@ import timber.log.Timber;
 public class SettingsActivity extends FragmentActivity {
     private DevicePolicyManager devicePolicyManager;
     private KeyguardManager keyguardManager;
+    private final int ADMIN_INTENT = 15;
 
     private ControlOpenApp controlOpenApp;
 
@@ -50,6 +51,8 @@ public class SettingsActivity extends FragmentActivity {
             public void openedApp(String packageName) {
                 Timber.e("opened secured app..." + packageName);
                 // TODO secured app was opened -> open lock screen or something else.
+                Intent lockIntent = keyguardManager.createConfirmDeviceCredentialIntent("Secured Area", "Please enter your PIN");
+                startActivityForResult(lockIntent, ADMIN_INTENT);
             }
         });
 
@@ -57,29 +60,29 @@ public class SettingsActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 startCatchOpenAppData();
-//                if(controlOpenApp.getUsageStatsList().isEmpty()){
-//                    new AlertDialog.Builder(SettingsActivity.this)
-//                            .setTitle("Nutzungsdatenzugriff")
-//                            .setMessage("fITsec benötigt eine weitere Berechtigung. Bitte aktivieren Sie diese in der folgenden Anwendung.")
-//                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-//                                    startActivity(intent);
-//                                }
-//                            })
-//                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    //Nothing happens
-//                                }
-//                            })
-//                            .show();
-//                    if (controlOpenApp.getUsageStatsList().isEmpty()){
-//                        startCatchOpenAppData();
-//                    }
-//                }
-//                else{
-//                    startCatchOpenAppData();
-//                }
+                if(controlOpenApp.getUsageStatsList().isEmpty()){
+                    new AlertDialog.Builder(SettingsActivity.this)
+                            .setTitle("Nutzungsdatenzugriff")
+                            .setMessage("fITsec benötigt eine weitere Berechtigung. Bitte aktivieren Sie diese in der folgenden Anwendung.")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+                                    startActivity(intent);
+                                }
+                            })
+                            .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Nothing happens
+                                }
+                            })
+                            .show();
+                    if (controlOpenApp.getUsageStatsList().isEmpty()){
+                        startCatchOpenAppData();
+                    }
+                }
+                else{
+                    startCatchOpenAppData();
+                }
             }
         });
 
@@ -95,12 +98,8 @@ public class SettingsActivity extends FragmentActivity {
                     Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
                     intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
                     intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,"Please enable admin rights");
-                    startActivityForResult(intent, 15);
-                } else {
-                    Intent lockIntent = keyguardManager.createConfirmDeviceCredentialIntent("test", "Teeeeeeeeeeeeest");
-                    startActivityForResult(lockIntent, 15);
+                    startActivityForResult(intent, ADMIN_INTENT);
                 }
-
             }
         });
 

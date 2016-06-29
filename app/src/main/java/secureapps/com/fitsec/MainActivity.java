@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -82,26 +83,26 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_list:
                 //TODO maybe enter passwort here to get access to list
-                Fragment appListFragment = new AppListFragment();
+                /*Fragment appListFragment = new AppListFragment();
                 // Insert the fragment by replacing any existing fragment
                 fragmentManager.beginTransaction()
                         .replace(R.id.content_frame, appListFragment)
                         .commit();
+*/
 
-
-                //Intent mainListActivity = new Intent(this, ListActivity.class);
-                //startActivity(mainListActivity);
+                Intent mainListActivity = new Intent(this, ListActivity.class);
+                startActivity(mainListActivity);
                 break;
 
             case R.id.nav_settings:
-                Fragment settingsFragment = new SettingsFragment();
+                /*Fragment settingsFragment = new SettingsFragment();
                 // Insert the fragment by replacing any existing fragment
                 fragmentManager.beginTransaction()
                         .replace(R.id.content_frame, settingsFragment)
                         .commit();
-
-                //Intent settingsActivity = new Intent(this, SettingsActivity.class);
-                //startActivity(settingsActivity);
+                */
+                Intent settingsActivity = new Intent(this, SettingsActivity.class);
+                startActivity(settingsActivity);
                 break;
         }
 
@@ -118,7 +119,9 @@ public class MainActivity extends AppCompatActivity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             // Inflate the layout for this fragment
-            return inflater.inflate(R.layout.activity_list, container, false);
+            View rootView = inflater.inflate(R.layout.activity_list, container, false);
+            Log.e("Activity?!?!?!?!", getActivity().toString());
+            return rootView;
         }
 
     }
