@@ -17,6 +17,9 @@ public class RealmApp extends RealmObject {
     private int installations;
     private int secureCount;
 
+    private boolean isInstallationReported;
+    private int secureReport;
+
     public RealmApp() {}
 
     public String getPackageName() {
@@ -65,5 +68,21 @@ public class RealmApp extends RealmObject {
 
     public void setSecureCount(int secureCount) {
         this.secureCount = secureCount;
+    }
+
+    public boolean isInstallationReported() {
+        return isInstallationReported;
+    }
+
+    public void setInstallationReported(boolean installationReported) {
+        isInstallationReported = installationReported;
+    }
+
+    public int getSecureReport() {
+        return secureReport;
+    }
+
+    public void setSecureReport(int secureReport) {
+        this.secureReport = secureReport;
     }
 }

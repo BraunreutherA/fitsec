@@ -8,43 +8,38 @@ import com.parse.ParseObject;
  */
 @ParseClassName("App")
 public class App extends ParseObject {
-    private boolean isChecked;
+    public static final String KEY_PACKAGE_NAME = "packageName";
+    private static final String KEY_INSTALLATION_COUNT = "installationCount";
+    private static final String KEY_SECURE_COUNT = "secureCount";
 
-    public App() {
-        isChecked = false;
+
+    public App() {}
+
+    public void setPackageName(String packageName) {
+        put(KEY_PACKAGE_NAME, packageName);
     }
 
-    public String getAppImageUrl() {
-        return getString("imageUrl");
+    public String getPackageName() {
+        return getString(KEY_PACKAGE_NAME);
     }
 
-    public String getAppName() {
-        return getString("name");
-    }
-
-    public int getSecuredCount() {
-        return getInt("secureCount");
-    }
-
-    public void incrementSecuredCount() {
-        increment("secureCount");
-        isChecked = true;
+    public void incrementSecureCount() {
+        increment(KEY_SECURE_COUNT);
     }
 
     public void decrementSecureCount() {
-        increment("secureCount", -1);
-        isChecked = false;
+        increment(KEY_SECURE_COUNT, -1);
     }
 
-    public int getFakeSecureCount() {
-        return getInt("fakeSecureCount");
+    public int getSecureCount() {
+        return getInt(KEY_SECURE_COUNT);
     }
 
-    public int getUserCount() {
-        return getInt("userCount");
+    public void incrementInstallationCount() {
+        increment(KEY_INSTALLATION_COUNT);
     }
 
-    public boolean isChecked() {
-        return isChecked;
+    public int getInstallationCount() {
+        return getInt(KEY_INSTALLATION_COUNT);
     }
 }
