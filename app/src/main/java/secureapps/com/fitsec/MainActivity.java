@@ -1,12 +1,12 @@
 package secureapps.com.fitsec;
 
 import android.app.Activity;
-import android.app.FragmentManager;
+import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentActivity;;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,15 +77,15 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
 
         switch (id) {
             case R.id.nav_home:
-                //nothing abbends
+                //nothing happens
                 break;
             case R.id.nav_list:
                 //TODO maybe enter passwort here to get access to list
-                Fragment appListFragment = new AppListFragment();
+                AppListFragment appListFragment = new AppListFragment();
                 // Insert the fragment by replacing any existing fragment
                 fragmentManager.beginTransaction()
                         .replace(R.id.content_frame, appListFragment)
@@ -96,46 +96,20 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.nav_settings:
-                /*Fragment settingsFragment = new SettingsFragment();
+                SettingsFragment settingsFragment = new SettingsFragment();
+
                 // Insert the fragment by replacing any existing fragment
                 fragmentManager.beginTransaction()
                         .replace(R.id.content_frame, settingsFragment)
                         .commit();
-*/
-                Intent settingsActivity = new Intent(this, SettingsActivity.class);
-                startActivity(settingsActivity);
+
+//                Intent settingsActivity = new Intent(this, SettingsActivity.class);
+//                startActivity(settingsActivity);
                 break;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    public static class AppListFragment extends Fragment {
-        public AppListFragment() {
-            // Empty constructor required for fragment subclasses
-        }
-
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            // Inflate the layout for this fragment
-            View rootView = inflater.inflate(R.layout.activity_list, container, false);
-            return rootView;
-        }
-
-    }
-
-    public static class SettingsFragment extends Fragment {
-        public SettingsFragment() {
-            // Empty constructor required for fragment subclasses
-        }
-
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            // Inflate the layout for this fragment
-            return inflater.inflate(R.layout.activity_settings, container, false);
-        }
-
     }
 }
