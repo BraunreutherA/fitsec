@@ -19,7 +19,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -86,14 +85,14 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_list:
                 //TODO maybe enter passwort here to get access to list
-               /* Fragment appListFragment = new AppListFragment();
+                Fragment appListFragment = new AppListFragment();
                 // Insert the fragment by replacing any existing fragment
                 fragmentManager.beginTransaction()
                         .replace(R.id.content_frame, appListFragment)
                         .commit();
-*/
-                Intent mainListActivity = new Intent(this, ListActivity.class);
-                startActivity(mainListActivity);
+
+//                Intent mainListActivity = new Intent(this, ListActivity.class);
+//                startActivity(mainListActivity);
                 break;
 
             case R.id.nav_settings:

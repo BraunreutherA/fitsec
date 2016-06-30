@@ -1,5 +1,6 @@
 package secureapps.com.fitsec;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
@@ -29,6 +30,8 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
     public AppService(Context context) {
         this.context = context;
         packageManager = context.getPackageManager();
+
+//        ((Activity) context).getLoaderManager().initLoader(0, null, AppService.this);
     }
 
     public OrderedRealmCollection<RealmApp> getInstalledApps() {
