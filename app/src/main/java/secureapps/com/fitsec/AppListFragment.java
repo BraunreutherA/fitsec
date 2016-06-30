@@ -5,7 +5,9 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import butterknife.BindView;
 import secureapps.com.fitsec.base.BaseFragment;
@@ -16,6 +18,12 @@ import secureapps.com.fitsec.base.BaseFragment;
 public class AppListFragment extends BaseFragment {
     @BindView(R.id.app_list)
     RecyclerView appList;
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {

@@ -110,10 +110,6 @@ public class SettingsFragment extends BaseFragment {
                 }
             }
         });
-
-
-
-
     }
 
     @Override

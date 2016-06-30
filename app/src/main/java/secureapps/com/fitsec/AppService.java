@@ -6,6 +6,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -16,7 +17,9 @@ import java.util.List;
 import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
 import io.realm.RealmQuery;
+import io.realm.exceptions.RealmException;
 import secureapps.com.fitsec.data.RealmApp;
+import timber.log.Timber;
 
 /**
  * Created by Alex on 27.06.16.
@@ -31,7 +34,7 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
         this.context = context;
         packageManager = context.getPackageManager();
 
-//        ((Activity) context).getLoaderManager().initLoader(0, null, AppService.this);
+        ((FragmentActivity) context).getSupportLoaderManager().initLoader(0, null, this).forceLoad();
     }
 
     public OrderedRealmCollection<RealmApp> getInstalledApps() {
@@ -62,26 +65,29 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
             apps.add(realmApp);
         }
 
+        OrderedRealmCollection<RealmApp> realmApps = getInstalledApps();
+        final List<RealmApp> diffedApps = new ArrayList<>();
+        for (int i = 0; i < realmApps.size(); i ++) {
+            for (RealmApp realmApp: apps) {
+                if (!realmApp.getPackageName().equals(realmApps.get(i))) {
+                    diffedApps.add(realmApp);
+                }
+            }
+        }
+
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                realm.copyToRealmOrUpdate(apps);
+                try {
+                    realm.copyToRealm(diffedApps);
+                } catch (RealmException exception) {
+                    // ignore
+                    Timber.d(exception.getMessage());
+                }
             }
         });
     }
-
-//    private List<ApplicationInfo> getPackageInformation() {
-//        List<ApplicationInfo> packages = new ArrayList<>();
-//
-////        for (ApplicationInfo app: packageManager.getInstalledApplications(PackageManager.GET_META_DATA)) {
-////            if (!isSystemApp(app.packageName)) {
-////                packages.add(app);
-////            }
-////        }
-//
-//        return packages;
-//    }
 
     private boolean isSystemApp(String packageName) {
         // TODO doesn't work
