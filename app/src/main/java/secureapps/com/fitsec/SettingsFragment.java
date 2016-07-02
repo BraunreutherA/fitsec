@@ -17,7 +17,6 @@ import android.widget.Button;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import butterknife.BindView;
 import secureapps.com.fitsec.base.BaseFragment;
 import timber.log.Timber;
 
@@ -32,13 +31,11 @@ public class SettingsFragment extends BaseFragment {
 
     private ControlOpenApp controlOpenApp;
 
-    public SettingsFragment() {
-
-    }
-
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        getActionBar().setTitle(R.string.action_settings);
 
         devicePolicyManager = (DevicePolicyManager)getContext().getSystemService(Context.DEVICE_POLICY_SERVICE);
         keyguardManager = (KeyguardManager)getContext().getSystemService(Context.KEYGUARD_SERVICE);
@@ -114,7 +111,7 @@ public class SettingsFragment extends BaseFragment {
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.activity_settings;
+        return R.layout.settings_fragment;
     }
 
     private void startCatchOpenAppData(){

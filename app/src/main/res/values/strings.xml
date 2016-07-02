@@ -5,5 +5,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_activity_main">MainActivity</string>
 
+    <string name="action_home">Home</string>
+    <string name="action_appList">Secured Apps</string>
     <string name="action_settings">Settings</string>
 </resources>

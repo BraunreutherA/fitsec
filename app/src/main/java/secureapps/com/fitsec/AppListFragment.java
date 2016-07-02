@@ -15,7 +15,6 @@ import java.util.List;
 import butterknife.BindView;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 import secureapps.com.fitsec.base.BaseFragment;
 import secureapps.com.fitsec.data.RealmApp;
 import timber.log.Timber;
@@ -38,6 +37,8 @@ public class AppListFragment extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        getActionBar().setTitle(getString(R.string.action_appList));
 
         AppService appService = new AppService();
         realmAppAdapter = new RealmAppAdapter(getContext(), new ArrayList<RealmApp>());
@@ -73,6 +74,6 @@ public class AppListFragment extends BaseFragment {
 
     @Override
     protected int getLayoutRes() {
-        return R.layout.activity_list;
+        return R.layout.list_fragment;
     }
 }

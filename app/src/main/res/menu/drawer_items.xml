@@ -4,29 +4,22 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_home"
-            android:title="Home" />
+            android:icon="@mipmap/ic_home"
+            android:title="@string/action_home" />
+
         <item
             android:id="@+id/nav_list"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Secured Apps" />
-
-        <item
-            android:id="@+id/nav_settings"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Settings" />
+            android:icon="@mipmap/ic_list_black_48dp"
+            android:title="@string/action_appList" />
     </group>
 
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
-        </menu>
-    </item>
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@mipmap/ic_settings_black_48dp"
+            android:title="@string/action_settings" />
+    </group>
+
 
 </menu>

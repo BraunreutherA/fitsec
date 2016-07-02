@@ -10,8 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import secureapps.com.fitsec.data.InstallationReport;
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -28,7 +26,11 @@ public class MainActivity extends AppCompatActivity
         InstallationReportService installationReportService = new InstallationReportService();
         installationReportService.syncInstallationReports();
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_layout);
+        HomeFragment homeFragment = new HomeFragment();
+        getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, homeFragment).commit();
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -61,7 +63,10 @@ public class MainActivity extends AppCompatActivity
 
         switch (id) {
             case R.id.nav_home:
-                //nothing happens
+                HomeFragment homeFragment = new HomeFragment();
+                fragmentManager.beginTransaction()
+                        .replace(R.id.content_frame, homeFragment)
+                        .commit();
                 break;
             case R.id.nav_list:
                 //TODO maybe enter passwort here to get access to list
@@ -70,21 +75,14 @@ public class MainActivity extends AppCompatActivity
                 fragmentManager.beginTransaction()
                         .replace(R.id.content_frame, appListFragment)
                         .commit();
-
-//                Intent mainListActivity = new Intent(this, ListActivity.class);
-//                startActivity(mainListActivity);
                 break;
 
             case R.id.nav_settings:
                 SettingsFragment settingsFragment = new SettingsFragment();
-
                 // Insert the fragment by replacing any existing fragment
                 fragmentManager.beginTransaction()
                         .replace(R.id.content_frame, settingsFragment)
                         .commit();
-
-//                Intent settingsActivity = new Intent(this, SettingsActivity.class);
-//                startActivity(settingsActivity);
                 break;
         }
 
