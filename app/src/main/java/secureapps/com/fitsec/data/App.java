@@ -10,7 +10,7 @@ import com.parse.ParseObject;
 public class App extends ParseObject {
     public static final String KEY_PACKAGE_NAME = "packageName";
     private static final String KEY_INSTALLATION_COUNT = "installationCount";
-    private static final String KEY_SECURE_COUNT = "secureCount";
+    public static final String KEY_SECURE_COUNT = "secureCount";
 
 
     public App() {}

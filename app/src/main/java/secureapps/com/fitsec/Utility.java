@@ -11,6 +11,12 @@ import android.os.Build;
 import android.support.v4.content.ContextCompat;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import io.realm.RealmObject;
+import io.realm.RealmResults;
 
 /**
  * Created by Alex on 27.06.16.
@@ -41,5 +47,15 @@ public class Utility {
         } else {
             throw new IllegalArgumentException("unsupported drawable type");
         }
+    }
+
+    public static <T extends RealmObject> List<T> transformRealResultsToList(RealmResults<T> realmResults) {
+        List<T> list = new ArrayList<>(realmResults.size());
+
+        for (T realmObject: realmResults) {
+            list.add(realmObject);
+        }
+
+        return list;
     }
 }

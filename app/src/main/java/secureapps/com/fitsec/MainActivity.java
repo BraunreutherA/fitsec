@@ -10,12 +10,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import secureapps.com.fitsec.data.InstallationReport;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        AppService appService = new AppService();
+        appService.updateInternalAppList(this);
+
+        SecureReportService secureReportService = new SecureReportService();
+        secureReportService.syncSecureReports();
+
+        InstallationReportService installationReportService = new InstallationReportService();
+        installationReportService.syncInstallationReports();
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
