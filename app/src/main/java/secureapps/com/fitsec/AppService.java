@@ -33,7 +33,8 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
     private Context context;
     private PackageManager packageManager;
 
-    public AppService() {}
+    public AppService() {
+    }
 
     public rx.Observable<List<RealmApp>> getInstalledApps() {
         Realm realm = Realm.getDefaultInstance();
@@ -191,6 +192,23 @@ class AppListLoader extends AsyncTaskLoader<List<ApplicationInfo>> {
 
     @Override
     public List<ApplicationInfo> loadInBackground() {
-        return packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+        List<ApplicationInfo> applicationInfos = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+        List<ApplicationInfo> filteredApplicationInfos = new ArrayList<>();
+
+        for (ApplicationInfo app : applicationInfos) {
+            if (packageManager.getLaunchIntentForPackage(app.packageName) != null) {
+                if ((app.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 1) {
+                    // updated system apps
+                } else if ((app.flags & ApplicationInfo.FLAG_SYSTEM) == 1) {
+                    // system apps
+
+                } else {
+                    // user installed apps
+                    filteredApplicationInfos.add(app);
+                }
+            }
+        }
+
+        return filteredApplicationInfos;
     }
 }
