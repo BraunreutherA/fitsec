@@ -54,8 +54,8 @@ public class SettingsActivity extends FragmentActivity {
                 startCatchOpenAppData();
                 if(controlOpenApp.getUsageStatsList().isEmpty()){
                     new AlertDialog.Builder(SettingsActivity.this)
-                            .setTitle("Nutzungsdatenzugriff")
-                            .setMessage("fITsec benötigt eine weitere Berechtigung. Bitte aktivieren Sie diese in der folgenden Anwendung.")
+                            .setTitle("Apps with Usage Access")
+                            .setMessage("fITsec requires further authorization. Please enable them in the following application.")
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     Intent intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);

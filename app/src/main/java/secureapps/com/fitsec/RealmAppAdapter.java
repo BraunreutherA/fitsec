@@ -1,8 +1,12 @@
 package secureapps.com.fitsec;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +17,8 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import java.util.ResourceBundle;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +50,8 @@ public class RealmAppAdapter extends RealmRecyclerViewAdapter<RealmApp, RealmApp
     public void onBindViewHolder(SecureAppViewHolder holder, int position) {
         final RealmApp app = getData().get(position);
 
+        final ControlOpenApp controlOpenApp = new ControlOpenApp(context);
+
         Bitmap appIcon = BitmapFactory.decodeByteArray(app.getAppIcon(), 0, app.getAppIcon().length);
         holder.logo.setImageBitmap(appIcon);
         holder.name.setText(app.getName());
@@ -67,11 +75,22 @@ public class RealmAppAdapter extends RealmRecyclerViewAdapter<RealmApp, RealmApp
         holder.toggle.setOnCheckedChangeListener(new OnCheckedChangeListener(position) {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                RealmApp app = (RealmApp) buttonView.getTag();
-                Realm realm = Realm.getDefaultInstance();
-                realm.beginTransaction();
-                app.setSecured(isChecked);
-                realm.commitTransaction();
+                if(controlOpenApp.getUsageStatsList().isEmpty()){
+                    new AlertDialog.Builder(RealmAppAdapter.this.context)
+                            .setTitle("Additional Settings")
+                            .setMessage("There are settings missing to run this app properly. Please go to the settings menu and activate them.")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                   //Nothing happens
+                                }
+                            })
+                            .show();
+                }
+                    RealmApp app = (RealmApp) buttonView.getTag();
+                    Realm realm = Realm.getDefaultInstance();
+                    realm.beginTransaction();
+                    app.setSecured(isChecked);
+                    realm.commitTransaction();
             }
         });
     }
