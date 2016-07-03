@@ -1,5 +1,6 @@
 package secureapps.com.fitsec;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -10,8 +11,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+import timber.log.Timber;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private HomeFragment homeFragment;
+    private SettingsFragment settingsFragment;
+    private AppListFragment appListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +37,24 @@ public class MainActivity extends AppCompatActivity
         installationReportService.syncInstallationReports();
 
         setContentView(R.layout.main_layout);
-        HomeFragment homeFragment = new HomeFragment();
+
+        homeFragment = new HomeFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, homeFragment).commit();
 
+        settingsFragment = new SettingsFragment();
+        settingsFragment.setOnStartAppTimerListener(new SettingsFragment.OnStartAppTimerListener(){
+            @Override
+            public void startAppTimer() {
+                Timer timer = new Timer();
+                TimerTask refresher = new TimerTask() {
+                    public void run() {
+                        settingsFragment.monitorAppUsage();
+                    };
+                };
+                timer.scheduleAtFixedRate(refresher, 100,100);
+            }
+        });
+        appListFragment = new AppListFragment();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -63,14 +88,12 @@ public class MainActivity extends AppCompatActivity
 
         switch (id) {
             case R.id.nav_home:
-                HomeFragment homeFragment = new HomeFragment();
                 fragmentManager.beginTransaction()
                         .replace(R.id.content_frame, homeFragment)
                         .commit();
                 break;
             case R.id.nav_list:
                 //TODO maybe enter passwort here to get access to list
-                AppListFragment appListFragment = new AppListFragment();
                 // Insert the fragment by replacing any existing fragment
                 fragmentManager.beginTransaction()
                         .replace(R.id.content_frame, appListFragment)
@@ -78,7 +101,6 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.nav_settings:
-                SettingsFragment settingsFragment = new SettingsFragment();
                 // Insert the fragment by replacing any existing fragment
                 fragmentManager.beginTransaction()
                         .replace(R.id.content_frame, settingsFragment)
