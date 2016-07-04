@@ -33,7 +33,8 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
     private Context context;
     private PackageManager packageManager;
 
-    public AppService() {}
+    public AppService() {
+    }
 
     public rx.Observable<List<RealmApp>> getInstalledApps() {
         Realm realm = Realm.getDefaultInstance();
@@ -50,7 +51,7 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
     }
 
     public void setAppSecured(final String packageName, final boolean secured) {
-        final Realm realm = Realm.getDefaultInstance();
+        Realm realm = Realm.getDefaultInstance();
 
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
@@ -61,6 +62,26 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
                         .findFirst();
 
                 realmApp.setSecured(secured);
+            }
+        });
+
+        fetchUsageData();
+    }
+
+    public void setAppSecured(final float threshold) {
+        Realm realm = Realm.getDefaultInstance();
+        final SecureReportService secureReportService = new SecureReportService();
+
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmResults<RealmApp> realmApps = realm.where(RealmApp.class).findAll();
+                for (RealmApp realmApp: realmApps) {
+                    if ((realmApp.getSecureCount() / realmApp.getInstallations()) > threshold) {
+                        realmApp.setSecured(true);
+                        secureReportService.createNewSecureReport(realmApp.getPackageName(), true);
+                    }
+                }
             }
         });
 
@@ -191,6 +212,23 @@ class AppListLoader extends AsyncTaskLoader<List<ApplicationInfo>> {
 
     @Override
     public List<ApplicationInfo> loadInBackground() {
-        return packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+        List<ApplicationInfo> applicationInfos = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+        List<ApplicationInfo> filteredApplicationInfos = new ArrayList<>();
+
+        for (ApplicationInfo app : applicationInfos) {
+            if (packageManager.getLaunchIntentForPackage(app.packageName) != null) {
+                if ((app.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 1) {
+                    // updated system apps
+                } else if ((app.flags & ApplicationInfo.FLAG_SYSTEM) == 1) {
+                    // system apps
+
+                } else {
+                    // user installed apps
+                    filteredApplicationInfos.add(app);
+                }
+            }
+        }
+
+        return filteredApplicationInfos;
     }
 }
