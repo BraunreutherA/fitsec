@@ -1,10 +1,12 @@
 package secureapps.com.fitsec;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,11 +38,14 @@ public class RealmAppAdapter extends RecyclerView.Adapter<RealmAppAdapter.Secure
     private final Context context;
     private List<RealmApp> realmApps;
 
+    private ControlOpenApp controlOpenApp;
+
     public RealmAppAdapter(Context context, List<RealmApp> realmApps) {
         this.context = context;
         this.realmApps = realmApps;
         secureReportService = new SecureReportService();
         appService = new AppService();
+        controlOpenApp = new ControlOpenApp(context);
     }
 
 
@@ -80,15 +85,26 @@ public class RealmAppAdapter extends RecyclerView.Adapter<RealmAppAdapter.Secure
         holder.toggle.setTag(app);
         holder.toggle.setOnCheckedChangeListener(new OnCheckedChangeListener(position) {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, final boolean isChecked) {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(controlOpenApp.getUsageStatsList().isEmpty()){
+                    new AlertDialog.Builder(RealmAppAdapter.this.context)
+                            .setTitle("Additional Settings")
+                            .setMessage("There are settings missing to run this app properly. Please go to the settings menu and activate them.")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    //Nothing happens
+                                }
+                            })
+                            .show();
+                }
                 RealmApp app = (RealmApp) buttonView.getTag();
-
-                appService.setAppSecured(app.getPackageName(), isChecked);
-                secureReportService.createNewSecureReport(app.getPackageName(), isChecked);
+                Realm realm = Realm.getDefaultInstance();
+                realm.beginTransaction();
+                app.setSecured(isChecked);
+                realm.commitTransaction();
             }
         });
     }
-
     @Override
     public int getItemCount() {
         return realmApps.size();
@@ -125,3 +141,4 @@ public class RealmAppAdapter extends RecyclerView.Adapter<RealmAppAdapter.Secure
         }
     }
 }
+
