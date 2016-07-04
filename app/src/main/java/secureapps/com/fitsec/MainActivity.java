@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity
     private Timer timer;
     private TimerTask timerTask;
 
+    private boolean timerRunning;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +48,8 @@ public class MainActivity extends AppCompatActivity
 
         settingsFragment = new SettingsFragment();
         timer = new Timer();
+        timerRunning = false;
+
         timerTask = new TimerTask() {
             public void run() {
                 settingsFragment.monitorAppUsage();
@@ -56,7 +60,10 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void startAppTimer(boolean start) {
                 if (start) {
-                    timer.scheduleAtFixedRate(timerTask, 100,100);
+                    if (!timerRunning) {
+                        timer.scheduleAtFixedRate(timerTask, 1000,1000);
+                        timerRunning = true;
+                    }
                 } else {
                     //stopp Timer!
                     timer.cancel();
