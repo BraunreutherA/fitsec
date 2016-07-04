@@ -1,14 +1,12 @@
 package secureapps.com.fitsec;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,23 +16,38 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import java.util.ResourceBundle;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
 import io.realm.RealmRecyclerViewAdapter;
+import secureapps.com.fitsec.data.App;
 import secureapps.com.fitsec.data.RealmApp;
+import secureapps.com.fitsec.data.SecureReport;
 import timber.log.Timber;
 
 /**
  * Created by Alex on 27.06.16.
  */
-public class RealmAppAdapter extends RealmRecyclerViewAdapter<RealmApp, RealmAppAdapter.SecureAppViewHolder> {
-    public RealmAppAdapter(@NonNull Context context, @Nullable OrderedRealmCollection<RealmApp> data) {
-        super(context, data, true);
+public class RealmAppAdapter extends RecyclerView.Adapter<RealmAppAdapter.SecureAppViewHolder> {
+    private final SecureReportService secureReportService;
+    private final AppService appService;
+
+    private final Context context;
+    private List<RealmApp> realmApps;
+
+    private ControlOpenApp controlOpenApp;
+
+    public RealmAppAdapter(Context context, List<RealmApp> realmApps) {
+        this.context = context;
+        this.realmApps = realmApps;
+        secureReportService = new SecureReportService();
+        appService = new AppService();
+        controlOpenApp = new ControlOpenApp(context);
     }
+
 
     @Override
     public SecureAppViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -48,15 +61,13 @@ public class RealmAppAdapter extends RealmRecyclerViewAdapter<RealmApp, RealmApp
 
     @Override
     public void onBindViewHolder(SecureAppViewHolder holder, int position) {
-        final RealmApp app = getData().get(position);
+        final RealmApp app = realmApps.get(position);
 
-        final ControlOpenApp controlOpenApp = new ControlOpenApp(context);
-
-        Bitmap appIcon = BitmapFactory.decodeByteArray(app.getAppIcon(), 0, app.getAppIcon().length);
+        final Bitmap appIcon = BitmapFactory.decodeByteArray(app.getAppIcon(), 0, app.getAppIcon().length);
         holder.logo.setImageBitmap(appIcon);
         holder.name.setText(app.getName());
 
-        float percentage = (float) app.getInstallations() / (float) app.getSecureCount();
+        float percentage = (float) Math.max(0, app.getSecureCount())  / (float) app.getInstallations();
 
         holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.white));
 
@@ -81,18 +92,26 @@ public class RealmAppAdapter extends RealmRecyclerViewAdapter<RealmApp, RealmApp
                             .setMessage("There are settings missing to run this app properly. Please go to the settings menu and activate them.")
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                   //Nothing happens
+                                    //Nothing happens
                                 }
                             })
                             .show();
                 }
-                    RealmApp app = (RealmApp) buttonView.getTag();
-                    Realm realm = Realm.getDefaultInstance();
-                    realm.beginTransaction();
-                    app.setSecured(isChecked);
-                    realm.commitTransaction();
+                RealmApp app = (RealmApp) buttonView.getTag();
+                Realm realm = Realm.getDefaultInstance();
+                realm.beginTransaction();
+                app.setSecured(isChecked);
+                realm.commitTransaction();
             }
         });
+    }
+    @Override
+    public int getItemCount() {
+        return realmApps.size();
+    }
+
+    public void setRealmApps(List<RealmApp> realmApps) {
+        this.realmApps = realmApps;
     }
 
     private abstract class OnCheckedChangeListener implements CompoundButton.OnCheckedChangeListener {
@@ -122,3 +141,4 @@ public class RealmAppAdapter extends RealmRecyclerViewAdapter<RealmApp, RealmApp
         }
     }
 }
+

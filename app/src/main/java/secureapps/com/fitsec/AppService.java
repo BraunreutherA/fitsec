@@ -10,17 +10,18 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 
-import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.realm.OrderedRealmCollection;
 import io.realm.Realm;
 import io.realm.RealmQuery;
+import io.realm.RealmResults;
+import rx.functions.Func1;
 import secureapps.com.fitsec.data.App;
+import secureapps.com.fitsec.data.InstallationReport;
 import secureapps.com.fitsec.data.RealmApp;
 
 /**
@@ -29,25 +30,41 @@ import secureapps.com.fitsec.data.RealmApp;
 public class AppService implements LoaderManager.LoaderCallbacks<List<ApplicationInfo>> {
     private static final String SYSTEM_PACKAGE_NAME = "android";
 
-    private final PackageManager packageManager;
-    private final Context context;
+    private Context context;
+    private PackageManager packageManager;
 
-    public AppService(Context context) {
-        this.context = context;
-        packageManager = context.getPackageManager();
+    public AppService() {}
 
-        ((FragmentActivity) context).getSupportLoaderManager().initLoader(0, null, this).forceLoad();
-        fetchUsageData();
-
-        Realm realm = Realm.getDefaultInstance();
-        realm.where(RealmApp.class).findAllAsync().addChangeListener(new Synchronizer());
-    }
-
-    public OrderedRealmCollection<RealmApp> getInstalledApps() {
+    public rx.Observable<List<RealmApp>> getInstalledApps() {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<RealmApp> query = realm.where(RealmApp.class);
 
-        return query.findAllAsync();
+        return query.findAllAsync()
+                .asObservable()
+                .map(new Func1<RealmResults<RealmApp>, List<RealmApp>>() {
+                    @Override
+                    public List<RealmApp> call(RealmResults<RealmApp> realmApps) {
+                        return Utility.transformRealResultsToList(realmApps);
+                    }
+                });
+    }
+
+    public void setAppSecured(final String packageName, final boolean secured) {
+        final Realm realm = Realm.getDefaultInstance();
+
+        realm.executeTransactionAsync(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                RealmApp realmApp = realm
+                        .where(RealmApp.class)
+                        .equalTo("packageName", packageName)
+                        .findFirst();
+
+                realmApp.setSecured(secured);
+            }
+        });
+
+        fetchUsageData();
     }
 
     public static boolean isAppSecured(String packageName) {
@@ -60,35 +77,50 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
     }
 
     private void fetchUsageData() {
-        OrderedRealmCollection<RealmApp> realmApps = getInstalledApps();
-        List<String> packageNames = new ArrayList<>(realmApps.size());
-        for (RealmApp realmApp : realmApps) {
-            packageNames.add(realmApp.getPackageName());
-        }
-
-        ParseQuery<App> query = ParseQuery.getQuery(App.class);
-        query.whereContainedIn(App.KEY_PACKAGE_NAME, packageNames);
-
-        query.findInBackground(new FindCallback<App>() {
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
-            public void done(List<App> objects, ParseException e) {
-                for (App app : objects) {
-                    OrderedRealmCollection<RealmApp> realmApps = getInstalledApps();
-                    for (RealmApp realmApp : realmApps) {
-                        if (app.getPackageName().equals(realmApp.getPackageName())) {
-                            realmApp.setInstallations(app.getInstallationCount());
-                            realmApp.setSecureCount(app.getSecureCount());
+            public void execute(Realm realm) {
+                RealmResults<RealmApp> realmApps = realm.where(RealmApp.class)
+                        .findAll();
+
+                List<String> packageNames = new ArrayList<>(realmApps.size());
+                for (RealmApp realmApp : realmApps) {
+                    packageNames.add(realmApp.getPackageName());
+                }
+
+                ParseQuery<App> query = ParseQuery.getQuery(App.class);
+                query.whereContainedIn(App.KEY_PACKAGE_NAME, packageNames);
+
+                try {
+                    List<App> apps = query.find();
+
+                    for (App app : apps) {
+                        for (RealmApp realmApp : realmApps) {
+                            if (app.getPackageName().equals(realmApp.getPackageName())) {
+                                realmApp.setInstallations(app.getInstallationCount());
+                                realmApp.setSecureCount(app.getSecureCount());
+                            }
                         }
                     }
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
             }
         });
+    }
+
+    public void updateInternalAppList(Context context) {
+        this.context = context;
+        this.packageManager = context.getPackageManager();
+        ((FragmentActivity) context).getSupportLoaderManager().initLoader(0, null, this).forceLoad();
     }
 
     private void updateInternalAppList(List<ApplicationInfo> packages) {
         Realm realm = Realm.getDefaultInstance();
 
         final List<RealmApp> apps = new ArrayList<>();
+        final List<InstallationReport> installationReports = new ArrayList<>();
         for (ApplicationInfo applicationInfo : packages) {
             if (realm.where(RealmApp.class).equalTo("packageName", applicationInfo.packageName).count() == 0) {
                 RealmApp realmApp = new RealmApp();
@@ -97,9 +129,10 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
                 realmApp.setName((String) packageManager.getApplicationLabel(applicationInfo));
                 realmApp.setAppIcon(Utility.convertDrawable(packageManager.getApplicationIcon(applicationInfo)));
 
-                realmApp.setSecureReport(0);
-                realmApp.setInstallationReported(false);
+                InstallationReport installationReport = new InstallationReport();
+                installationReport.setPackageName(applicationInfo.packageName);
 
+                installationReports.add(installationReport);
                 apps.add(realmApp);
             }
         }
@@ -107,9 +140,12 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
+                realm.copyToRealm(installationReports);
                 realm.copyToRealm(apps);
             }
         });
+
+        fetchUsageData();
     }
 
     private boolean isSystemApp(String packageName) {

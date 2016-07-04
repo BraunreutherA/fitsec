@@ -9,8 +9,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import secureapps.com.fitsec.base.BaseFragment;
+import secureapps.com.fitsec.data.RealmApp;
+import timber.log.Timber;
 
 /**
  * Created by Alex on 30.06.16.
@@ -18,6 +26,8 @@ import secureapps.com.fitsec.base.BaseFragment;
 public class AppListFragment extends BaseFragment {
     @BindView(R.id.app_list)
     RecyclerView appList;
+
+    private RealmAppAdapter realmAppAdapter;
 
     @Nullable
     @Override
@@ -29,12 +39,36 @@ public class AppListFragment extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        AppService appService = new AppService(getContext());
+        AppService appService = new AppService();
+        realmAppAdapter = new RealmAppAdapter(getContext(), new ArrayList<RealmApp>());
 
-        RealmAppAdapter realmAppAdapter = new RealmAppAdapter(getContext(), appService.getInstalledApps());
+        appService.getInstalledApps()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<RealmApp>>() {
+                    @Override
+                    public void onCompleted() {
+                        Timber.d("fetching complete...");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Timber.e(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(List<RealmApp> realmApps) {
+                        newData(realmApps);
+                    }
+                });
+
         appList.setLayoutManager(new LinearLayoutManager(getContext()));
         appList.setItemAnimator(new DefaultItemAnimator());
         appList.setAdapter(realmAppAdapter);
+    }
+
+    private void newData(List<RealmApp> realmApps) {
+        realmAppAdapter.setRealmApps(realmApps);
+        realmAppAdapter.notifyDataSetChanged();
     }
 
     @Override
