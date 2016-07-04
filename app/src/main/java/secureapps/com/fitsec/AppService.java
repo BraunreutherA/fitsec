@@ -19,6 +19,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmQuery;
 import io.realm.RealmResults;
+import rx.Observable;
 import rx.functions.Func1;
 import secureapps.com.fitsec.data.App;
 import secureapps.com.fitsec.data.InstallationReport;
@@ -86,6 +87,28 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
         });
 
         fetchUsageData();
+    }
+
+    public Observable<List<RealmApp>> getUnsercured(final float threshold) {
+        Realm realm = Realm.getDefaultInstance();
+        return realm.where(RealmApp.class)
+                .equalTo("secured", false)
+                .findAllAsync()
+                .asObservable()
+                .map(new Func1<RealmResults<RealmApp>, List<RealmApp>>() {
+                    @Override
+                    public List<RealmApp> call(RealmResults<RealmApp> realmApps) {
+                        List<RealmApp> filtered = new ArrayList<RealmApp>();
+
+                        for (RealmApp realmApp: realmApps) {
+                            if ((realmApp.getSecureCount() / realmApp.getInstallations()) > threshold) {
+                                filtered.add(realmApp);
+                            }
+                        }
+
+                        return filtered;
+                    }
+                });
     }
 
     public static boolean isAppSecured(String packageName) {
