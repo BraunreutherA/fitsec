@@ -23,6 +23,8 @@ public class MainActivity extends AppCompatActivity
     private HomeFragment homeFragment;
     private SettingsFragment settingsFragment;
     private AppListFragment appListFragment;
+    private Timer timer;
+    private TimerTask timerTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,16 +45,23 @@ public class MainActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction().replace(R.id.content_frame, homeFragment).commit();
 
         settingsFragment = new SettingsFragment();
+        timer = new Timer();
+        timerTask = new TimerTask() {
+            public void run() {
+                settingsFragment.monitorAppUsage();
+            };
+        };
+
         settingsFragment.setOnStartAppTimerListener(new SettingsFragment.OnStartAppTimerListener(){
             @Override
-            public void startAppTimer() {
-                Timer timer = new Timer();
-                TimerTask refresher = new TimerTask() {
-                    public void run() {
-                        settingsFragment.monitorAppUsage();
-                    };
-                };
-                timer.scheduleAtFixedRate(refresher, 100,100);
+            public void startAppTimer(boolean start) {
+                if (start) {
+                    timer.scheduleAtFixedRate(timerTask, 100,100);
+                } else {
+                    //stopp Timer!
+                    timer.cancel();
+                    timer.purge();
+                }
             }
         });
         appListFragment = new AppListFragment();

@@ -77,7 +77,6 @@ public class SettingsFragment extends BaseFragment {
         enableUserStats.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                onStartAppTimerListener.startAppTimer();
                 if(firstTime == 0){
                     if (controlOpenApp.getUsageStatsList().isEmpty()) {
                         new AlertDialog.Builder(getContext())
@@ -183,14 +182,7 @@ public class SettingsFragment extends BaseFragment {
         activateSecurity.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Log.e("ADMIN", "admin is " + devicePolicyManager.isAdminActive(componentName));
-                if(!devicePolicyManager.isAdminActive(componentName)){
-                    //enable admin device rights
-                    Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-                    intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
-                    intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,"Bitte Admin Rechte aktivieren");
-                    startActivityForResult(intent, ADMIN_INTENT);
-                }
+                onStartAppTimerListener.startAppTimer(isChecked);
             }
         });
 
@@ -214,19 +206,7 @@ public class SettingsFragment extends BaseFragment {
         this.controlOpenApp.printCurrentUsageStatus();
     }
 
-    /*
-    private void startCatchOpenAppData(){
-        Timer timer = new Timer();
-        TimerTask refresher = new TimerTask() {
-            public void run() {
-                hasStarted = true;
-                controlOpenApp.printCurrentUsageStatus();
-            };
-        };
-        timer.scheduleAtFixedRate(refresher, 100,100);
-    }*/
-
     interface OnStartAppTimerListener {
-        void startAppTimer();
+        void startAppTimer(boolean isRunning);
     }
 }

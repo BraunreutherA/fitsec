@@ -27,7 +27,7 @@ public class LockScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.lock_screen);
+        //setContentView(R.layout.lock_screen);
 
         devicePolicyManager = (DevicePolicyManager)getSystemService(Context.DEVICE_POLICY_SERVICE);
         keyguardManager = (KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE);
