@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -34,15 +35,6 @@ public class LockScreenActivity extends Activity {
 
         startActivityForResult(keyguardManager.createConfirmDeviceCredentialIntent("Secured Area", "Please enter your PIN"), 15);
 
-        /*Button button = (Button)findViewById(R.id.test);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setRes
-                finish();
-            }
-        });*/
-
     }
 
 
@@ -51,8 +43,10 @@ public class LockScreenActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.e("LOCK", "Result " + resultCode);
 
+        final Activity thisActivity = this;
+
         if(resultCode == RESULT_OK){
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(thisActivity);
             prefs.edit().putBoolean("isUnlocked", true).commit();
 
             moveTaskToBack(true);
@@ -67,22 +61,4 @@ public class LockScreenActivity extends Activity {
             }
         }*/
     }
-
-    /*
-    public void openLockScreen(){
-
-        boolean isAdmin = devicePolicyManager.isAdminActive(componentName);
-        if(!isAdmin){
-            //enable admin device rights
-            Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-            intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
-            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,"Please enable admin rights");
-            startActivityForResult(intent, ADMIN_INTENT);
-        }
-
-        Intent lockIntent = keyguardManager.createConfirmDeviceCredentialIntent("test", "Teeeeeeeeeeeeest");
-        startActivityForResult(lockIntent, ADMIN_INTENT);
-
-
-    }*/
 }

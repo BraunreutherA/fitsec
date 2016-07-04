@@ -41,6 +41,9 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".Receiver">
+        </receiver>
+
     </application>
 
 </manifest>

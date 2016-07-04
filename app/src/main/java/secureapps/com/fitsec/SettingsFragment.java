@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
@@ -56,7 +57,7 @@ public class SettingsFragment extends BaseFragment {
                 Timber.e("opened secured app..." + packageName);
                 // TODO rework lockscreen ?!?!?!
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                if (prefs.getBoolean("isUnlocked", false)) {
+                if (!prefs.getBoolean("isUnlocked", false)) {
                     Intent lockIntent = new Intent(getActivity(), LockScreenActivity.class);
                     startActivityForResult(lockIntent, ADMIN_INTENT);
                 }
