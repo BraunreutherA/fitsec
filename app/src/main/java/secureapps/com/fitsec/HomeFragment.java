@@ -70,7 +70,7 @@ public class HomeFragment extends BaseFragment {
             }
         });
 
-        float treshold = 0.1f;
+        float treshold = 0.0f;
 
         appService.getUnsecured(treshold)
                 .observeOn(AndroidSchedulers.mainThread())
