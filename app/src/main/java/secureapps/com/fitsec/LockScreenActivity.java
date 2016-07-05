@@ -31,7 +31,7 @@ public class LockScreenActivity extends Activity {
 
         devicePolicyManager = (DevicePolicyManager)getSystemService(Context.DEVICE_POLICY_SERVICE);
         keyguardManager = (KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE);
-        
+
         componentName = new ComponentName(this, MyAdminReceiver.class);
 
         startActivityForResult(keyguardManager.createConfirmDeviceCredentialIntent("Secured Area", "Please enter your PIN"), 15);
