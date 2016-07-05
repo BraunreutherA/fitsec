@@ -89,7 +89,7 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
         fetchUsageData();
     }
 
-    public Observable<List<RealmApp>> getUnsercured(final float threshold) {
+    public Observable<List<RealmApp>> getUnsecured(final float threshold) {
         Realm realm = Realm.getDefaultInstance();
         return realm.where(RealmApp.class)
                 .equalTo("secured", false)

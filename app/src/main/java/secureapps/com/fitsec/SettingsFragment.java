@@ -66,6 +66,9 @@ public class SettingsFragment extends BaseFragment {
                 if (!prefs.getBoolean("isUnlocked", false)) {
                     Intent lockIntent = new Intent(getActivity(), LockScreenActivity.class);
                     startActivityForResult(lockIntent, ADMIN_INTENT);
+
+                    //Intent lockIntent = keyguardManager.createConfirmDeviceCredentialIntent("Secured Area", "Please enter your PIN");
+                    //getActivity().startActivityForResult(lockIntent, ADMIN_INTENT);
                 }
                 //Intent lockIntent = keyguardManager.createConfirmDeviceCredentialIntent("Secured Area", "Please enter your PIN");
                //getActivity().startActivityForResult(lockIntent, ADMIN_INTENT);

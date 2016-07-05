@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 
@@ -26,14 +27,15 @@ public class LockScreenActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-
-        //setContentView(R.layout.lock_screen);
+        setContentView(R.layout.lock_screen);
+        setVisible(false);
 
         devicePolicyManager = (DevicePolicyManager)getSystemService(Context.DEVICE_POLICY_SERVICE);
         keyguardManager = (KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE);
         componentName = new ComponentName(this, MyAdminReceiver.class);
 
         startActivityForResult(keyguardManager.createConfirmDeviceCredentialIntent("Secured Area", "Please enter your PIN"), 15);
+
 
     }
 
@@ -50,6 +52,7 @@ public class LockScreenActivity extends Activity {
             prefs.edit().putBoolean("isUnlocked", true).commit();
 
             moveTaskToBack(true);
+
         }
 
         /*
@@ -60,5 +63,20 @@ public class LockScreenActivity extends Activity {
                 Toast.makeText(getApplicationContext(), "Failed to register as Admin", Toast.LENGTH_SHORT).show();
             }
         }*/
+    }
+
+    @Override
+    public void onBackPressed() {
+        //do nothing, user has to enter PIN
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if(keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_MENU){
+            //do nothing
+            return false;
+        } else {
+            return  super.onKeyDown(keyCode, event);
+        }
     }
 }
