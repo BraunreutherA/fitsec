@@ -66,7 +66,9 @@ public class ControlOpenApp {
     }
 
     public void printCurrentUsageStatus() {
-        printUsageStats(getUsageStatsList());
+        if(!getUsageStatsList().isEmpty()) {
+            printUsageStats(getUsageStatsList());
+        }
     }
 
     @SuppressWarnings("ResourceType")
