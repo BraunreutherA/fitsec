@@ -78,7 +78,7 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
             public void execute(Realm realm) {
                 RealmResults<RealmApp> realmApps = realm.where(RealmApp.class).findAll();
                 for (RealmApp realmApp: realmApps) {
-                    if ((realmApp.getSecureCount() / realmApp.getInstallations()) > threshold) {
+                    if ((realmApp.getSecureCount() / Math.min(1, realmApp.getInstallations())) > threshold) {
                         realmApp.setSecured(true);
                         secureReportService.createNewSecureReport(realmApp.getPackageName(), true);
                     }
@@ -101,7 +101,7 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
                         List<RealmApp> filtered = new ArrayList<RealmApp>();
 
                         for (RealmApp realmApp: realmApps) {
-                            if ((realmApp.getSecureCount() / realmApp.getInstallations()) > threshold) {
+                            if ((realmApp.getSecureCount() / Math.min(1, realmApp.getInstallations())) > threshold) {
                                 filtered.add(realmApp);
                             }
                         }
