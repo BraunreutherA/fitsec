@@ -27,18 +27,17 @@ public class LockScreenActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.lock_screen);
-        setVisible(false);
+        //setContentView(R.layout.lock_screen);
 
         devicePolicyManager = (DevicePolicyManager)getSystemService(Context.DEVICE_POLICY_SERVICE);
         keyguardManager = (KeyguardManager)getSystemService(Context.KEYGUARD_SERVICE);
+        
         componentName = new ComponentName(this, MyAdminReceiver.class);
 
         startActivityForResult(keyguardManager.createConfirmDeviceCredentialIntent("Secured Area", "Please enter your PIN"), 15);
 
 
     }
-
 
 
     @Override
@@ -54,29 +53,23 @@ public class LockScreenActivity extends Activity {
             moveTaskToBack(true);
 
         }
-
-        /*
-        if (requestCode == ADMIN_INTENT) {
-            if (resultCode == RESULT_OK) {
-                Toast.makeText(getApplicationContext(), "Registered As Admin", Toast.LENGTH_SHORT).show();
-            }else{
-                Toast.makeText(getApplicationContext(), "Failed to register as Admin", Toast.LENGTH_SHORT).show();
-            }
-        }*/
     }
 
+
+    //TODO disable hardware buttons
+    /*
     @Override
     public void onBackPressed() {
         //do nothing, user has to enter PIN
-    }
+    }*/
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if(keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_MENU){
+        if(keyCode == KeyEvent.KEYCODE_HOME || keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_BACK){
             //do nothing
-            return false;
-        } else {
-            return  super.onKeyDown(keyCode, event);
+            //return false;
+            Log.i("LOCK", "Hardware Button clicked " + keyCode);
         }
+        return false;
     }
 }

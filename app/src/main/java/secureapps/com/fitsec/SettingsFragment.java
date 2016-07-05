@@ -62,16 +62,13 @@ public class SettingsFragment extends BaseFragment {
             public void openedApp(String packageName) {
                 Timber.e("opened secured app..." + packageName);
                 // TODO rework lockscreen ?!?!?!
+
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
                 if (!prefs.getBoolean("isUnlocked", false)) {
+
                     Intent lockIntent = new Intent(getActivity(), LockScreenActivity.class);
                     startActivityForResult(lockIntent, ADMIN_INTENT);
-
-                    //Intent lockIntent = keyguardManager.createConfirmDeviceCredentialIntent("Secured Area", "Please enter your PIN");
-                    //getActivity().startActivityForResult(lockIntent, ADMIN_INTENT);
                 }
-                //Intent lockIntent = keyguardManager.createConfirmDeviceCredentialIntent("Secured Area", "Please enter your PIN");
-               //getActivity().startActivityForResult(lockIntent, ADMIN_INTENT);
             }
         });
 
