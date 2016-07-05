@@ -2,7 +2,6 @@ package secureapps.com.fitsec;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,11 +26,11 @@ public class HomeFragment extends BaseFragment {
     @BindView(R.id.app_suggestions)
     RecyclerView appSuggestions;
 
-    private SeekBar tresholdSlider;
+    private SeekBar thresholdSlider;
     private int currentProgress;
 
     private AppService appService;
-    private RealmAppAdapter realmAppAdapter;
+    private RecommendedRealmAppAdapter realmAppAdapter;
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
@@ -41,13 +40,13 @@ public class HomeFragment extends BaseFragment {
 
         appService = new AppService();
 
-        realmAppAdapter = new RealmAppAdapter(getContext(), new ArrayList<RealmApp>());
+        realmAppAdapter = new RecommendedRealmAppAdapter(getContext(), new ArrayList<RealmApp>());
         appSuggestions.setLayoutManager(new LinearLayoutManager(getContext()));
         appSuggestions.setItemAnimator(new DefaultItemAnimator());
         appSuggestions.setAdapter(realmAppAdapter);
 
-        tresholdSlider = (SeekBar)view.findViewById(R.id.treshold_slider);
-        tresholdSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        thresholdSlider = (SeekBar)view.findViewById(R.id.treshold_slider);
+        thresholdSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Log.e("Slider", "Slider progress " + progress);
