@@ -38,7 +38,7 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
     public AppService() {
     }
 
-    public rx.Observable<List<RealmApp>> getInstalledApps() {
+    public rx.Observable<List<RealmApp>> getInstalledApps(final Context context) {
         Realm realm = Realm.getDefaultInstance();
         RealmQuery<RealmApp> query = realm.where(RealmApp.class);
 
@@ -48,6 +48,20 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
                     @Override
                     public List<RealmApp> call(RealmResults<RealmApp> realmApps) {
                         return Utility.transformRealResultsToList(realmApps);
+                    }
+                })
+                .map(new Func1<List<RealmApp>, List<RealmApp>>() {
+                    @Override
+                    public List<RealmApp> call(List<RealmApp> realmApps) {
+                        List<RealmApp> apps = new ArrayList<>();
+
+                        for (RealmApp realmApp: realmApps) {
+                            if (!realmApp.getPackageName().equals(context.getPackageName())) {
+                                apps.add(realmApp);
+                            }
+                        }
+
+                        return apps;
                     }
                 });
     }
@@ -106,6 +120,20 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
                         }
 
                         return filtered;
+                    }
+                })
+                .map(new Func1<List<RealmApp>, List<RealmApp>>() {
+                    @Override
+                    public List<RealmApp> call(List<RealmApp> realmApps) {
+                        List<RealmApp> apps = new ArrayList<>();
+
+                        for (RealmApp realmApp: realmApps) {
+                            if (!realmApp.getPackageName().equals(context.getPackageName())) {
+                                apps.add(realmApp);
+                            }
+                        }
+
+                        return apps;
                     }
                 });
     }
