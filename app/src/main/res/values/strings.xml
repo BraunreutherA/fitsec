@@ -8,5 +8,5 @@
     <string name="action_home">Home</string>
     <string name="action_appList">Secured Apps</string>
     <string name="action_settings">Settings</string>
-    <string name="user_secure_percentage">% der Nutzer sichern diese App.</string>
+    <string name="user_secure_percentage">% of users secure this app.</string>
 </resources>
