@@ -31,6 +31,7 @@ public class SettingsFragment extends BaseFragment {
     private ComponentName componentName;
 
     private static final int LOCK_INTENT = 15;
+    private static final int DEVIC_ADMIN_LOCK = 20;
     private int firstTime = 0;
     private boolean hasStarted = false;
 
@@ -143,7 +144,7 @@ public class SettingsFragment extends BaseFragment {
                         Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
                         intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
                         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "Please enable admin rights");
-                        startActivityForResult(intent, LOCK_INTENT);
+                        startActivityForResult(intent, DEVIC_ADMIN_LOCK);
                         firstTime--;
                     } else {
                         new AlertDialog.Builder(getContext())
