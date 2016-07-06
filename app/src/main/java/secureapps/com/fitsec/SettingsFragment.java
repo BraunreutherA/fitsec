@@ -183,6 +183,9 @@ public class SettingsFragment extends BaseFragment {
                 AppService appService = new AppService();
                 appService.setAppSecured(getContext().getPackageName(), true);
 
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                prefs.edit().putBoolean("isUnlocked", false).commit();
+
                 onStartAppTimerListener.startAppTimer(isChecked);
             }
         });
