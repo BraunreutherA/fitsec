@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -182,6 +183,10 @@ public class SettingsFragment extends BaseFragment {
         activateSecurity.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                //set fitsec itself as a secured app
+                AppService appService = new AppService();
+                appService.setAppSecured(getContext().getPackageName(), true);
+
                 onStartAppTimerListener.startAppTimer(isChecked);
             }
         });
