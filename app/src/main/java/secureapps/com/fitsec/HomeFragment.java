@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,9 @@ import timber.log.Timber;
 public class HomeFragment extends BaseFragment {
     @BindView(R.id.app_suggestions)
     RecyclerView appSuggestions;
+
+    @BindView(R.id.slider_explanation)
+    TextView sliderExplanation;
 
     private SeekBar thresholdSlider;
     private int currentProgress;
@@ -49,8 +53,10 @@ public class HomeFragment extends BaseFragment {
         thresholdSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                Log.e("Slider", "Slider progress " + progress);
                 currentProgress = progress;
+
+                sliderExplanation.setText("Apps with more than " + progress + "% " +
+                        "secured installations will be secured automatically.");
             }
 
             @Override
@@ -60,14 +66,12 @@ public class HomeFragment extends BaseFragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                //save to secure apps by treshold
-                Log.e("Slider", "Stopped tracking, current progress " + currentProgress);
                 appService.setAppSecured((float) currentProgress / 100);
-
-                //TODO maybe update view
-
             }
         });
+
+        sliderExplanation.setText("Apps with more than  0% " +
+                "secured installations will be secured automatically.");
 
         float treshold = 0.0f;
 
@@ -92,8 +96,6 @@ public class HomeFragment extends BaseFragment {
                         newData(realmApps);
                     }
                 });
-
-
     }
 
     private void newData(List<RealmApp> realmApps) {
