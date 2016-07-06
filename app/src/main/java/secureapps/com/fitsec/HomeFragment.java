@@ -75,7 +75,7 @@ public class HomeFragment extends BaseFragment {
 
         float treshold = 0.0f;
 
-        appService.getUnsecured(treshold)
+        appService.getUnsecured(treshold, getContext())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<RealmApp>>() {
                     @Override
