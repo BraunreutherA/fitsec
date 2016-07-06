@@ -43,7 +43,7 @@ public class AppListFragment extends BaseFragment {
         AppService appService = new AppService();
         realmAppAdapter = new RealmAppAdapter(getContext(), new ArrayList<RealmApp>());
 
-        appService.getInstalledApps()
+        appService.getInstalledApps(getContext())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<List<RealmApp>>() {
                     @Override
