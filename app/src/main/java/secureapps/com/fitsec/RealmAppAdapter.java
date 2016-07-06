@@ -32,8 +32,6 @@ public class RealmAppAdapter extends BaseRealmAppAdapter<RealmAppAdapter.SecureA
 
     @Override
     public SecureAppViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Timber.d("creating viewholder...");
-
         View itemView = LayoutInflater.from(context)
                 .inflate(R.layout.app_view_holder, parent, false);
 
@@ -59,7 +57,7 @@ public class RealmAppAdapter extends BaseRealmAppAdapter<RealmAppAdapter.SecureA
             holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.veryLightColorAccent));
         }
 
-        holder.secureCount.setText(Integer.toString((int) (percentage * 100)) + "% der Nutzer sichern diese App.");
+        holder.secureCount.setText(Integer.toString((int) (percentage * 100)) + context.getString(R.string.user_secure_percentage));
 
         holder.toggle.setOnCheckedChangeListener(null);
         holder.toggle.setChecked(app.isSecured());
@@ -79,10 +77,7 @@ public class RealmAppAdapter extends BaseRealmAppAdapter<RealmAppAdapter.SecureA
                             .show();
                 }
                 RealmApp app = (RealmApp) buttonView.getTag();
-                Realm realm = Realm.getDefaultInstance();
-                realm.beginTransaction();
-                app.setSecured(isChecked);
-                realm.commitTransaction();
+                appService.setAppSecured(app.getPackageName(), isChecked);
             }
         });
     }

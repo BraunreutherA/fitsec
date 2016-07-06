@@ -66,10 +66,7 @@ public class RecommendedRealmAppAdapter extends BaseRealmAppAdapter<RecommendedR
                             .show();
                 }
                 RealmApp app = (RealmApp) buttonView.getTag();
-                Realm realm = Realm.getDefaultInstance();
-                realm.beginTransaction();
-                app.setSecured(isChecked);
-                realm.commitTransaction();
+                appService.setAppSecured(app.getPackageName(), isChecked);
             }
         });
     }

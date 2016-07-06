@@ -62,7 +62,7 @@ public class HomeFragment extends BaseFragment {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 //save to secure apps by treshold
                 Log.e("Slider", "Stopped tracking, current progress " + currentProgress);
-                appService.setAppSecured(currentProgress);
+                appService.setAppSecured((float) currentProgress / 100);
 
                 //TODO maybe update view
 

@@ -24,6 +24,7 @@ import rx.functions.Func1;
 import secureapps.com.fitsec.data.App;
 import secureapps.com.fitsec.data.InstallationReport;
 import secureapps.com.fitsec.data.RealmApp;
+import timber.log.Timber;
 
 /**
  * Created by Alex on 27.06.16.
@@ -52,6 +53,7 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
     }
 
     public void setAppSecured(final String packageName, final boolean secured) {
+        final SecureReportService secureReportService = new SecureReportService();
         Realm realm = Realm.getDefaultInstance();
 
         realm.executeTransactionAsync(new Realm.Transaction() {
@@ -63,10 +65,9 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
                         .findFirst();
 
                 realmApp.setSecured(secured);
+                secureReportService.createNewSecureReport(packageName, secured);
             }
         });
-
-        fetchUsageData();
     }
 
     public void setAppSecured(final float threshold) {
@@ -76,7 +77,7 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                RealmResults<RealmApp> realmApps = realm.where(RealmApp.class).findAll();
+                RealmResults<RealmApp> realmApps = realm.where(RealmApp.class).equalTo("secured", false).findAll();
                 for (RealmApp realmApp: realmApps) {
                     if ((realmApp.getSecureCount() / Math.min(1, realmApp.getInstallations())) > threshold) {
                         realmApp.setSecured(true);
@@ -85,8 +86,6 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
                 }
             }
         });
-
-        fetchUsageData();
     }
 
     public Observable<List<RealmApp>> getUnsecured(final float threshold) {
@@ -120,7 +119,7 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
         return realmApp != null && realmApp.isSecured();
     }
 
-    private void fetchUsageData() {
+    public void fetchUsageData() {
         Realm realm = Realm.getDefaultInstance();
         realm.executeTransactionAsync(new Realm.Transaction() {
             @Override
@@ -143,6 +142,7 @@ public class AppService implements LoaderManager.LoaderCallbacks<List<Applicatio
                         for (RealmApp realmApp : realmApps) {
                             if (app.getPackageName().equals(realmApp.getPackageName())) {
                                 realmApp.setInstallations(app.getInstallationCount());
+                                Timber.e(app.getPackageName() + "----SecureCount-----" + app.getSecureCount());
                                 realmApp.setSecureCount(app.getSecureCount());
                             }
                         }
