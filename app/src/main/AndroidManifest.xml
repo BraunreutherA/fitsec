@@ -25,10 +25,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".LockScreenActivity" >
-        </activity>
-
         <receiver
             android:name=".MyAdminReceiver"
             android:permission="android.permission.BIND_DEVICE_ADMIN">

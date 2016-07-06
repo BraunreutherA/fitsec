@@ -1,29 +1,22 @@
 package secureapps.com.fitsec;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.KeyguardManager;
-import android.app.admin.DeviceAdminReceiver;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 import secureapps.com.fitsec.base.BaseFragment;
 import timber.log.Timber;
@@ -35,7 +28,9 @@ public class SettingsFragment extends BaseFragment {
 
     private DevicePolicyManager devicePolicyManager;
     private KeyguardManager keyguardManager;
-    private final int ADMIN_INTENT = 15;
+    private ComponentName componentName;
+
+    private static final int LOCK_INTENT = 15;
     private int firstTime = 0;
     private boolean hasStarted = false;
 
@@ -54,6 +49,7 @@ public class SettingsFragment extends BaseFragment {
 
         devicePolicyManager = (DevicePolicyManager)getContext().getSystemService(Context.DEVICE_POLICY_SERVICE);
         keyguardManager = (KeyguardManager)getContext().getSystemService(Context.KEYGUARD_SERVICE);
+        componentName = new ComponentName(getContext(), MyAdminReceiver.class);
 
         final Switch enableUserStats = (Switch)view.findViewById(R.id.enableUserStats);
 
@@ -67,8 +63,8 @@ public class SettingsFragment extends BaseFragment {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
                 if (!prefs.getBoolean("isUnlocked", false)) {
 
-                    Intent lockIntent = new Intent(getActivity(), LockScreenActivity.class);
-                    startActivityForResult(lockIntent, ADMIN_INTENT);
+                    Intent lockIntent = keyguardManager.createConfirmDeviceCredentialIntent("Secured Area", "Please enter your PIN");
+                    startActivityForResult(lockIntent, LOCK_INTENT);
                 }
             }
         });
@@ -147,7 +143,7 @@ public class SettingsFragment extends BaseFragment {
                         Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
                         intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName);
                         intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "Please enable admin rights");
-                        startActivityForResult(intent, ADMIN_INTENT);
+                        startActivityForResult(intent, LOCK_INTENT);
                         firstTime--;
                     } else {
                         new AlertDialog.Builder(getContext())
@@ -213,5 +209,18 @@ public class SettingsFragment extends BaseFragment {
 
     interface OnStartAppTimerListener {
         void startAppTimer(boolean isRunning);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == LOCK_INTENT){
+            if(resultCode == Activity.RESULT_OK){
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                prefs.edit().putBoolean("isUnlocked", true).commit();
+
+                getActivity().moveTaskToBack(true);
+
+            }
+        }
     }
 }
