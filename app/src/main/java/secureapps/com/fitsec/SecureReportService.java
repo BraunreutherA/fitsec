@@ -5,6 +5,7 @@ import com.parse.ParseQuery;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
+import rx.Observable;
 import rx.functions.Func1;
 import secureapps.com.fitsec.data.App;
 import secureapps.com.fitsec.data.SecureReport;
@@ -64,7 +65,14 @@ public class SecureReportService {
 
                         return null;
                     }
-                }).subscribe();
+                }).flatMap(new Func1<Object, Observable<?>>() {
+            @Override
+            public Observable<?> call(Object o) {
+                AppService appService = new AppService();
+                appService.fetchUsageData();
+                return Observable.empty();
+            }
+        }).subscribe();
     }
 
     private void deleteSecureReport(final String packageName) {
